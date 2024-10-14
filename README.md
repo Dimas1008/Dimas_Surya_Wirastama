@@ -106,35 +106,104 @@ for column in df_outlier:
         sns.boxplot(data=df_outlier, x=column)
 ```
 
-> The overriding design goal for Markdown's
-> formatting syntax is to make it as readable
-> as possible. The idea is that a
-> Markdown-formatted document should be
-> publishable as-is, as plain text, without
-> looking like it's been marked up with tags
-> or formatting instructions.
+# Data Preparation
+1. Missing Data Handling (Penanganan Data Kosong)
+Langkah pertama yang dilakukan adalah mengecek apakah ada data yang hilang (missing values) dalam dataset. Data yang hilang dapat menyebabkan bias pada model, sehingga perlu ditangani.
+- Proses:
+Mengecek keberadaan missing values pada setiap kolom.
+Jika ditemukan data yang hilang, beberapa teknik yang bisa digunakan adalah:
+Menghapus baris atau kolom dengan missing values (jika data yang hilang cukup banyak).
+Imputasi menggunakan mean, median, atau modus (untuk kolom numerik atau kategori).
+- Alasan: 
+Penanganan missing values penting agar model tidak mengalami error saat training dan mengurangi potensi bias.
 
-This text you see here is *actually- written in Markdown! To get a feel
-for Markdown's syntax, type some text into the left window and
-watch the results in the right.
+2. Feature Encoding (Pengkodean Fitur Kategori)
+Beberapa fitur dalam dataset seperti Sex, ChestPainType, RestingECG, ExerciseAngina, dan ST_Slope merupakan variabel kategori. Algoritma machine learning hanya bisa memproses data numerik, sehingga kita perlu mengubah data kategori ini menjadi angka.
+- Proses:
+Menggunakan One-Hot Encoding untuk variabel kategori nominal (misalnya ChestPainType, RestingECG, dll).
+Menggunakan Label Encoding untuk variabel biner atau ordinal seperti Sex dan ExerciseAngina.
+- Alasan: 
+Encoding diperlukan agar fitur kategori dapat digunakan oleh algoritma machine learning yang membutuhkan data dalam bentuk numerik.
 
-## Tech
+4. Feature Scaling (Normalisasi Fitur)
+Fitur-fitur numerik seperti Age, RestingBP, Cholesterol, MaxHR, dan Oldpeak memiliki rentang nilai yang berbeda. Hal ini dapat menyebabkan algoritma machine learning tertentu, terutama yang berbasis jarak seperti KNN atau SVM, menjadi bias terhadap fitur dengan nilai besar.
+- Proses:
+Menggunakan teknik Standardization atau Min-Max Scaling untuk memastikan bahwa semua fitur numerik memiliki skala yang sama.
+- Alasan: 
+Normalisasi memastikan bahwa semua fitur berkontribusi secara proporsional pada model, tanpa dipengaruhi oleh perbedaan skala yang besar.
 
-Dillinger uses a number of open source projects to work properly:
+4. Feature Selection (Pemilihan Fitur)
+Sebelum melanjutkan ke pemodelan, penting untuk memilih fitur-fitur yang paling relevan. Pemilihan fitur dilakukan berdasarkan analisis korelasi atau teknik lain untuk mengidentifikasi variabel yang memiliki hubungan kuat dengan variabel target HeartDisease.
+- Proses:
+Menggunakan Heatmap Korelasi untuk melihat hubungan antar fitur dan variabel target.
+Menghapus fitur yang memiliki korelasi rendah atau redundan.
+- Alasan: 
+Pemilihan fitur membantu meningkatkan efisiensi model, mengurangi overfitting, dan mempercepat waktu pelatihan.
 
-- [AngularJS] - HTML enhanced for web apps!
-- [Ace Editor] - awesome web-based text editor
-- [markdown-it] - Markdown parser done right. Fast and easy to extend.
-- [Twitter Bootstrap] - great UI boilerplate for modern web apps
-- [node.js] - evented I/O for the backend
-- [Express] - fast node.js network app framework [@tjholowaychuk]
-- [Gulp] - the streaming build system
-- [Breakdance](https://breakdance.github.io/breakdance/) - HTML
-to Markdown converter
-- [jQuery] - duh
+# Modeling
+1. K-Nearest Neighbors (KNN)
+Deskripsi: Algoritma KNN adalah salah satu algoritma sederhana berbasis jarak. KNN bekerja dengan mengklasifikasikan data baru berdasarkan mayoritas kelas dari tetangga terdekatnya.
 
-And of course Dillinger itself is open source with a [public repository][dill]
- on GitHub.
+Parameter yang Digunakan:
+n_neighbors: Jumlah tetangga yang digunakan untuk voting. Hyperparameter ini dapat di-tuning.
+weights: Bobot untuk tetangga. Dapat berupa 'uniform' atau 'distance'.
+
+Kelebihan:
+Mudah diimplementasikan dan dipahami.
+Tidak membutuhkan asumsi khusus tentang distribusi data.
+
+Kekurangan:
+Kinerja lambat pada dataset besar karena harus menghitung jarak setiap kali.
+Sangat sensitif terhadap fitur dengan skala besar, sehingga normalisasi sangat penting.
+
+2. Random Forest (RF)
+Deskripsi: Random Forest adalah algoritma ensemble yang menggunakan banyak pohon keputusan (decision trees). Setiap pohon di-train pada subset data yang berbeda, dan hasil akhirnya adalah voting mayoritas dari semua pohon.
+
+Parameter yang Digunakan:
+n_estimators: Jumlah pohon yang digunakan dalam hutan. Semakin banyak pohon, semakin stabil model, tetapi juga meningkatkan waktu komputasi.
+max_depth: Kedalaman maksimum pohon, dapat digunakan untuk menghindari overfitting.
+
+Kelebihan:
+Kuat terhadap overfitting, terutama dengan dataset berukuran besar.
+Mampu menangani data dengan missing values dan bekerja dengan baik pada data dengan kategori maupun numerik.
+
+Kekurangan:
+Waktu komputasi yang relatif lama dibandingkan algoritma lain jika jumlah pohon sangat banyak.
+Model yang lebih sulit diinterpretasikan karena sifatnya sebagai ensemble.
+
+3. AdaBoost (Adaptive Boosting)
+Deskripsi: Algoritma AdaBoost adalah teknik boosting yang fokus pada menggabungkan model-model lemah untuk membentuk model yang kuat. Setiap model berikutnya diberi perhatian khusus pada data yang sebelumnya salah diklasifikasikan oleh model sebelumnya.
+
+Parameter yang Digunakan:
+n_estimators: Jumlah model lemah (weak learners) yang digunakan.
+learning_rate: Kontrol seberapa besar kontribusi setiap model lemah pada prediksi akhir.
+
+Kelebihan:
+Dapat memperbaiki kinerja model yang lemah.
+Cocok untuk menangani masalah klasifikasi kompleks.
+
+Kekurangan:
+Sangat sensitif terhadap data outlier.
+Cenderung overfitting jika jumlah iterasi (n_estimators) terlalu banyak.
+
+4. Support Vector Machine (SVM)
+Deskripsi: SVM adalah algoritma yang mencoba menemukan hyperplane optimal yang dapat memisahkan data dari dua kelas dengan margin terbesar.
+
+Parameter yang Digunakan:
+C: Parameter regulasi yang mengontrol trade-off antara margin maksimal dan kesalahan klasifikasi.
+kernel: Fungsi kernel untuk mengubah ruang fitur (linear, RBF, polynomial).
+
+Kelebihan:
+Sangat efektif dalam ruang dimensi tinggi.
+Memiliki performa yang baik pada dataset kecil dengan margin yang jelas.
+
+Kekurangan: 
+Waktu komputasi yang tinggi pada dataset besar.
+Sulit untuk diinterpretasikan, terutama dengan kernel yang kompleks.
+
+# Evaluation
+
+Metrik yang akan kita gunakan pada prediksi ini adalah MSE atau Mean Squared Error yang menghitung jumlah selisih kuadrat rata-rata nilai sebenarnya dengan nilai prediksi.
 
 ## Installation
 
