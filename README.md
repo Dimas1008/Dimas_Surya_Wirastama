@@ -67,14 +67,17 @@ Variabel-variabel pada dataset Heart Disease adalah sebagai berikut:
 
 ### Data Loading
 Data_Jantung = pd.read_csv perintah ini digunakan untuk membaca data dengan format csv. kemudian ditampikan dengan memanggil kelas Data_Jantung, juga bisa menggunakan Data_Jantung.head() jika hanya ingin menampilkan 5 baris data
+
 ![Screenshot 2024-10-15 001931](https://github.com/user-attachments/assets/60592abd-bb34-453c-8e2e-1657b3557dcc)
 
 ### Menampilkan informasi dari dataset
 
 Pada Fungsi info() di pandas yang digunakan untuk menampilkan informasi dari dataset seperti jenis data tipe datanya
+
 ![Screenshot 2024-10-15 002725](https://github.com/user-attachments/assets/d0cd8d6b-e982-403b-8b6a-86fe633d6a57)
 
 Pada fungsi describe() yang berfungsi untuk menampilkan statistik dari dataset dan deskripsi pada dataset
+
 ![Screenshot 2024-10-15 002913](https://github.com/user-attachments/assets/0bccff20-d548-4259-89ea-f1cf509c755e)
 
 Fungsi describe() memberikan informasi statistik pada masing-masing kolom, antara lain:
@@ -89,7 +92,9 @@ Fungsi describe() memberikan informasi statistik pada masing-masing kolom, antar
 
 ### Mencari missing value
 Pada proyek ini  digunakan fungsi isnull().sum() yang berfungsi untuk menemukan nilai _missing value_ di masing  masing kolom dataset. _missing value_ sendiri dapat diartikan sebagai nilai atribut yang kosong pada objek data.
+
 ![image](https://github.com/user-attachments/assets/0c6fb89a-94b2-4bb9-af5b-8754c8fc7f7b)
+
 Jika ada angka di salah satu tabel maka disitu ada data yang missing values, jika ada missing value gunakan kode berikut :
 ```sh
 data_jantung = data_stroke.dropna()
@@ -97,7 +102,9 @@ data_jantung = data_stroke.dropna()
 
 ### Visuali Data
 Visualisai ini digunakan untuk melihat apakah ada data yang terdapat indikasi outlier atau tidak
+
 ![image](https://github.com/user-attachments/assets/100a161b-9a67-467d-a7d9-5a85b6673b42)
+
 menggunakan perintah berikut:
 ```sh
 df_outlier=data_jantung.select_dtypes(exclude=['object'])
@@ -109,39 +116,40 @@ for column in df_outlier:
 # Data Preparation
 1. Missing Data Handling (Penanganan Data Kosong)
 Langkah pertama yang dilakukan adalah mengecek apakah ada data yang hilang (missing values) dalam dataset. Data yang hilang dapat menyebabkan bias pada model, sehingga perlu ditangani.
-- Proses:
+    - Proses:
 Mengecek keberadaan missing values pada setiap kolom.
 Jika ditemukan data yang hilang, beberapa teknik yang bisa digunakan adalah:
 Menghapus baris atau kolom dengan missing values (jika data yang hilang cukup banyak).
 Imputasi menggunakan mean, median, atau modus (untuk kolom numerik atau kategori).
-- Alasan: 
+    - Alasan: 
 Penanganan missing values penting agar model tidak mengalami error saat training dan mengurangi potensi bias.
 
 2. Feature Encoding (Pengkodean Fitur Kategori)
 Beberapa fitur dalam dataset seperti Sex, ChestPainType, RestingECG, ExerciseAngina, dan ST_Slope merupakan variabel kategori. Algoritma machine learning hanya bisa memproses data numerik, sehingga kita perlu mengubah data kategori ini menjadi angka.
-- Proses:
+    - Proses:
 Menggunakan One-Hot Encoding untuk variabel kategori nominal (misalnya ChestPainType, RestingECG, dll).
 Menggunakan Label Encoding untuk variabel biner atau ordinal seperti Sex dan ExerciseAngina.
-- Alasan: 
+    - Alasan: 
 Encoding diperlukan agar fitur kategori dapat digunakan oleh algoritma machine learning yang membutuhkan data dalam bentuk numerik.
 
-4. Feature Scaling (Normalisasi Fitur)
+3. Feature Scaling (Normalisasi Fitur)
 Fitur-fitur numerik seperti Age, RestingBP, Cholesterol, MaxHR, dan Oldpeak memiliki rentang nilai yang berbeda. Hal ini dapat menyebabkan algoritma machine learning tertentu, terutama yang berbasis jarak seperti KNN atau SVM, menjadi bias terhadap fitur dengan nilai besar.
-- Proses:
+    - Proses:
 Menggunakan teknik Standardization atau Min-Max Scaling untuk memastikan bahwa semua fitur numerik memiliki skala yang sama.
-- Alasan: 
+    - Alasan: 
 Normalisasi memastikan bahwa semua fitur berkontribusi secara proporsional pada model, tanpa dipengaruhi oleh perbedaan skala yang besar.
 
 4. Feature Selection (Pemilihan Fitur)
 Sebelum melanjutkan ke pemodelan, penting untuk memilih fitur-fitur yang paling relevan. Pemilihan fitur dilakukan berdasarkan analisis korelasi atau teknik lain untuk mengidentifikasi variabel yang memiliki hubungan kuat dengan variabel target HeartDisease.
-- Proses:
+    - Proses:
 Menggunakan Heatmap Korelasi untuk melihat hubungan antar fitur dan variabel target.
 Menghapus fitur yang memiliki korelasi rendah atau redundan.
-- Alasan: 
+    - Alasan: 
 Pemilihan fitur membantu meningkatkan efisiensi model, mengurangi overfitting, dan mempercepat waktu pelatihan.
 
 # Modeling
-1. K-Nearest Neighbors (KNN)
+**K-Nearest Neighbors (KNN)**
+
 Deskripsi: Algoritma KNN adalah salah satu algoritma sederhana berbasis jarak. KNN bekerja dengan mengklasifikasikan data baru berdasarkan mayoritas kelas dari tetangga terdekatnya.
 
 Parameter yang Digunakan:
@@ -156,7 +164,8 @@ Kekurangan:
 Kinerja lambat pada dataset besar karena harus menghitung jarak setiap kali.
 Sangat sensitif terhadap fitur dengan skala besar, sehingga normalisasi sangat penting.
 
-2. Random Forest (RF)
+**Random Forest (RF)**
+
 Deskripsi: Random Forest adalah algoritma ensemble yang menggunakan banyak pohon keputusan (decision trees). Setiap pohon di-train pada subset data yang berbeda, dan hasil akhirnya adalah voting mayoritas dari semua pohon.
 
 Parameter yang Digunakan:
@@ -171,7 +180,8 @@ Kekurangan:
 Waktu komputasi yang relatif lama dibandingkan algoritma lain jika jumlah pohon sangat banyak.
 Model yang lebih sulit diinterpretasikan karena sifatnya sebagai ensemble.
 
-3. AdaBoost (Adaptive Boosting)
+**AdaBoost (Adaptive Boosting)**
+
 Deskripsi: Algoritma AdaBoost adalah teknik boosting yang fokus pada menggabungkan model-model lemah untuk membentuk model yang kuat. Setiap model berikutnya diberi perhatian khusus pada data yang sebelumnya salah diklasifikasikan oleh model sebelumnya.
 
 Parameter yang Digunakan:
@@ -186,7 +196,8 @@ Kekurangan:
 Sangat sensitif terhadap data outlier.
 Cenderung overfitting jika jumlah iterasi (n_estimators) terlalu banyak.
 
-4. Support Vector Machine (SVM)
+**Support Vector Machine (SVM)**
+
 Deskripsi: SVM adalah algoritma yang mencoba menemukan hyperplane optimal yang dapat memisahkan data dari dua kelas dengan margin terbesar.
 
 Parameter yang Digunakan:
@@ -205,139 +216,26 @@ Sulit untuk diinterpretasikan, terutama dengan kernel yang kompleks.
 
 Metrik yang akan kita gunakan pada prediksi ini adalah MSE atau Mean Squared Error yang menghitung jumlah selisih kuadrat rata-rata nilai sebenarnya dengan nilai prediksi.
 
-## Installation
+![image](https://github.com/user-attachments/assets/ff4c8572-5c96-407a-97e9-9304120b5cd1)
 
-Dillinger requires [Node.js](https://nodejs.org/) v10+ to run.
+Dalam proyek ini, Mean Squared Error (MSE) digunakan untuk mengevaluasi model prediksi. MSE mengukur seberapa jauh nilai prediksi model dari nilai sebenarnya, dengan memberi bobot lebih besar pada kesalahan yang lebih besar karena menggunakan kuadrat dari selisih.
 
-Install the dependencies and devDependencies and start the server.
+Keterangan:
+N = jumlah dataset
+yi = nilai sebenarnya
+y_pred = nilai prediksi
 
-```sh
-cd dillinger
-npm i
-node app
-```
+Hasil Evaluasi
 
-For production environments...
+![image](https://github.com/user-attachments/assets/36e9a1b2-f5ff-44db-af70-333a5826fb6f)
 
-```sh
-npm install --production
-NODE_ENV=production node app
-```
+Interpretasi:
+Semakin kecil nilai MSE, semakin baik model dalam melakukan prediksi.
+Karena MSE menghitung selisih kuadrat, ini sangat sensitif terhadap outlier, sehingga model dengan nilai MSE rendah dianggap lebih stabil dan akurat dalam tugas prediksi.
 
-## Plugins
+- KNN memiliki train MSE sebesar 0.067668 dan test MSE sebesar 0.082806, menunjukkan bahwa performa model di data uji cukup konsisten dengan performa di data latih.
+- Random Forest memiliki train MSE yang sangat kecil (0.014918), namun test MSE yang relatif lebih tinggi (0.10448), yang bisa mengindikasikan overfitting, dimana model terlalu mempelajari data latih dan kurang mampu generalisasi pada data uji.
+- Boosting menunjukkan performa yang lebih konsisten antara data latih dan data uji, dengan train MSE sebesar 0.07228 dan test MSE sebesar 0.088933.
+- SVM juga memiliki train MSE sebesar 0.073573 dan test MSE sebesar 0.081076, yang menunjukkan performa yang baik dan seimbang antara data latih dan uji.
 
-Dillinger is currently extended with the following plugins.
-Instructions on how to use them in your own application are linked below.
 
-| Plugin | README |
-| ------ | ------ |
-| Dropbox | [plugins/dropbox/README.md][PlDb] |
-| GitHub | [plugins/github/README.md][PlGh] |
-| Google Drive | [plugins/googledrive/README.md][PlGd] |
-| OneDrive | [plugins/onedrive/README.md][PlOd] |
-| Medium | [plugins/medium/README.md][PlMe] |
-| Google Analytics | [plugins/googleanalytics/README.md][PlGa] |
-
-## Development
-
-Want to contribute? Great!
-
-Dillinger uses Gulp + Webpack for fast developing.
-Make a change in your file and instantaneously see your updates!
-
-Open your favorite Terminal and run these commands.
-
-First Tab:
-
-```sh
-node app
-```
-
-Second Tab:
-
-```sh
-gulp watch
-```
-
-(optional) Third:
-
-```sh
-karma test
-```
-
-#### Building for source
-
-For production release:
-
-```sh
-gulp build --prod
-```
-
-Generating pre-built zip archives for distribution:
-
-```sh
-gulp build dist --prod
-```
-
-## Docker
-
-Dillinger is very easy to install and deploy in a Docker container.
-
-By default, the Docker will expose port 8080, so change this within the
-Dockerfile if necessary. When ready, simply use the Dockerfile to
-build the image.
-
-```sh
-cd dillinger
-docker build -t <youruser>/dillinger:${package.json.version} .
-```
-
-This will create the dillinger image and pull in the necessary dependencies.
-Be sure to swap out `${package.json.version}` with the actual
-version of Dillinger.
-
-Once done, run the Docker image and map the port to whatever you wish on
-your host. In this example, we simply map port 8000 of the host to
-port 8080 of the Docker (or whatever port was exposed in the Dockerfile):
-
-```sh
-docker run -d -p 8000:8080 --restart=always --cap-add=SYS_ADMIN --name=dillinger <youruser>/dillinger:${package.json.version}
-```
-
-> Note: `--capt-add=SYS-ADMIN` is required for PDF rendering.
-
-Verify the deployment by navigating to your server address in
-your preferred browser.
-
-```sh
-127.0.0.1:8000
-```
-
-## License
-
-MIT
-
-**Free Software, Hell Yeah!**
-
-[//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
-
-   [dill]: <https://github.com/joemccann/dillinger>
-   [git-repo-url]: <https://github.com/joemccann/dillinger.git>
-   [john gruber]: <http://daringfireball.net>
-   [df1]: <http://daringfireball.net/projects/markdown/>
-   [markdown-it]: <https://github.com/markdown-it/markdown-it>
-   [Ace Editor]: <http://ace.ajax.org>
-   [node.js]: <http://nodejs.org>
-   [Twitter Bootstrap]: <http://twitter.github.com/bootstrap/>
-   [jQuery]: <http://jquery.com>
-   [@tjholowaychuk]: <http://twitter.com/tjholowaychuk>
-   [express]: <http://expressjs.com>
-   [AngularJS]: <http://angularjs.org>
-   [Gulp]: <http://gulpjs.com>
-
-   [PlDb]: <https://github.com/joemccann/dillinger/tree/master/plugins/dropbox/README.md>
-   [PlGh]: <https://github.com/joemccann/dillinger/tree/master/plugins/github/README.md>
-   [PlGd]: <https://github.com/joemccann/dillinger/tree/master/plugins/googledrive/README.md>
-   [PlOd]: <https://github.com/joemccann/dillinger/tree/master/plugins/onedrive/README.md>
-   [PlMe]: <https://github.com/joemccann/dillinger/tree/master/plugins/medium/README.md>
-   [PlGa]: <https://github.com/RahulHP/dillinger/blob/master/plugins/googleanalytics/README.md>
