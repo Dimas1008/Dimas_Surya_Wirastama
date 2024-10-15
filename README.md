@@ -266,94 +266,114 @@ X_train[numerical_features].describe().round(4)
 Tabel ini menampilkan statistik deskriptif untuk dua kolom: **HeartDisease** dan **dimension**.
 
 # Modeling
-**K-Nearest Neighbors (KNN)**
+Penulis menerapkan empat algoritma machine learning yang berbeda dalam proyek ini, yaitu:
 
-Deskripsi: Algoritma KNN adalah salah satu algoritma sederhana berbasis jarak. KNN bekerja dengan mengklasifikasikan data baru berdasarkan mayoritas kelas dari tetangga terdekatnya.
+* KNN (K-Nearest Neighbors)
+* Random Forest
+* AdaBoost
+* SVM (Support Vector Machine)
+Semua model dilatih menggunakan parameter default yang tersedia di library scikit-learn.
 
-Parameter yang Digunakan:
-n_neighbors: Jumlah tetangga yang digunakan untuk voting. Hyperparameter ini dapat di-tuning.
-weights: Bobot untuk tetangga. Dapat berupa 'uniform' atau 'distance'.
+### Random Forest
 
-Kelebihan:
-Mudah diimplementasikan dan dipahami.
-Tidak membutuhkan asumsi khusus tentang distribusi data.
+Random Forest adalah model prediksi yang menggunakan teknik ensemble bagging, di mana beberapa model independen bekerja bersama untuk menyelesaikan masalah. Setiap model membuat prediksi sendiri-sendiri, lalu prediksi ini digabungkan untuk menghasilkan prediksi akhir. Hal ini membuat Random Forest lebih akurat dibandingkan model tunggal.
 
-Kekurangan:
-Kinerja lambat pada dataset besar karena harus menghitung jarak setiap kali.
-Sangat sensitif terhadap fitur dengan skala besar, sehingga normalisasi sangat penting.
+Pada dasarnya, Random Forest adalah versi bagging dari algoritma Decision Tree. Setiap Decision Tree dilatih dengan subset data yang dipilih secara acak, baik dari sisi fitur maupun sampel. Itulah sebabnya model ini dinamakan "Random Forest," karena tersusun dari banyak Decision Tree yang bekerja secara acak.
 
-**Random Forest (RF)**
+**Cara Kerja Umum Random Forest :**
+Mengambil k sampel dataset secara acak dengan pengembalian.
+Membangun Decision Tree ke-i dari dataset tersebut.
+Ulangi langkah di atas untuk k Decision Tree.
+Proyek ini menggunakan Random Forest Regressor dari scikit-learn untuk menyelesaikan masalah regresi dengan parameter sebagai berikut:
+    - n_estimators=50: jumlah Decision Tree dalam model.
+    - max_depth=16: kedalaman maksimal setiap Decision Tree.
+    - random_state=55: untuk memastikan hasil yang konsisten dengan nomor acak yang sama.
+    - n_jobs=-1: memanfaatkan semua core CPU yang tersedia untuk menjalankan model secara paralel.
+    
+**Kelebihan dan Kekurangan Random Forest :**
+- Kelebihan: Tangguh terhadap noise, mampu menangani data besar, serta mengatasi missing value.
+- Kekurangan: Interpretasi yang sulit dan memerlukan tuning model yang tepat.
 
-Deskripsi: Random Forest adalah algoritma ensemble yang menggunakan banyak pohon keputusan (decision trees). Setiap pohon di-train pada subset data yang berbeda, dan hasil akhirnya adalah voting mayoritas dari semua pohon.
+### KNN (K-Nearest Neighbors)
 
-Parameter yang Digunakan:
-n_estimators: Jumlah pohon yang digunakan dalam hutan. Semakin banyak pohon, semakin stabil model, tetapi juga meningkatkan waktu komputasi.
-max_depth: Kedalaman maksimum pohon, dapat digunakan untuk menghindari overfitting.
+KNN bekerja dengan membandingkan jarak antara sampel uji dan sampel latih, lalu memilih k tetangga terdekat untuk membuat prediksi. Pada proyek ini, n_neighbors=10 digunakan sebagai jumlah tetangga terdekat, dan jarak Euclidean digunakan untuk mengukur kedekatan antar-titik data.
 
-Kelebihan:
-Kuat terhadap overfitting, terutama dengan dataset berukuran besar.
-Mampu menangani data dengan missing values dan bekerja dengan baik pada data dengan kategori maupun numerik.
+**Cara Kerja Umum KNN**
+Menentukan nilai k sebagai jumlah tetangga terdekat.
+Menghitung jarak antara sampel uji dan sampel latih.
+Mengurutkan data berdasarkan jarak terkecil.
+Menentukan prediksi berdasarkan label dari k tetangga terdekat.
 
-Kekurangan:
-Waktu komputasi yang relatif lama dibandingkan algoritma lain jika jumlah pohon sangat banyak.
-Model yang lebih sulit diinterpretasikan karena sifatnya sebagai ensemble.
+**Kelebihan dan Kekurangan KNN**
+- Kelebihan: Algoritma ini tangguh terhadap data latih yang noisy dan efektif untuk data yang besar.
+- Kekurangan: Memerlukan penentuan nilai k yang tepat dan mahal dari sisi komputasi karena harus menghitung jarak setiap sampel uji dengan semua sampel latih.
 
-**AdaBoost (Adaptive Boosting)**
+### AdaBoost
+AdaBoost adalah algoritma boosting yang bertujuan meningkatkan akurasi prediksi dengan cara menggabungkan beberapa model sederhana yang dianggap lemah menjadi satu model yang kuat. Proyek ini menggunakan AdaBoost Regressor dari scikit-learn untuk meningkatkan performa model.
 
-Deskripsi: Algoritma AdaBoost adalah teknik boosting yang fokus pada menggabungkan model-model lemah untuk membentuk model yang kuat. Setiap model berikutnya diberi perhatian khusus pada data yang sebelumnya salah diklasifikasikan oleh model sebelumnya.
+**Cara Kerja Umum AdaBoost**
+Setiap observasi data latih diberi bobot yang sama pada awalnya.
+Model pertama dibangun, dan bobot yang lebih besar diberikan pada sampel yang salah diklasifikasikan.
+Model kedua dibangun untuk memperbaiki kesalahan model pertama.
+Proses ini diulangi sampai akurasi yang diinginkan tercapai.
 
-Parameter yang Digunakan:
-n_estimators: Jumlah model lemah (weak learners) yang digunakan.
-learning_rate: Kontrol seberapa besar kontribusi setiap model lemah pada prediksi akhir.
+**Parameter yang digunakan:**
+    - learning_rate=0.05: bobot yang diterapkan pada setiap regressor.
+    - random_state=55: untuk menjaga konsistensi hasil.
+    - Kelebihan dan Kekurangan AdaBoost
+    - Kelebihan: Mudah diimplementasikan dan cepat dalam pengujian, cocok untuk real-time implementation.
+    - Kekurangan: Memerlukan hypertuning yang tepat untuk performa optimal.
 
-Kelebihan:
-Dapat memperbaiki kinerja model yang lemah.
-Cocok untuk menangani masalah klasifikasi kompleks.
+### VM (Support Vector Machine)
+SVM adalah algoritma yang bertujuan mencari hyperplane terbaik untuk memisahkan data dalam ruang berdimensi tinggi. Dalam proyek ini, digunakan Support Vector Regressor (SVR), yang merupakan versi regresi dari SVM.
 
-Kekurangan:
-Sangat sensitif terhadap data outlier.
-Cenderung overfitting jika jumlah iterasi (n_estimators) terlalu banyak.
+**Cara Kerja Umum SVR**
+SVR berusaha mencari "jalan" yang dapat menampung sebanyak mungkin sampel dalam batas toleransi tertentu. Support vector adalah sampel yang berada pada batas atau pembatas dari "jalan" ini.
 
-**Support Vector Machine (SVM)**
+**Kelebihan dan Kekurangan SVM**
+- Kelebihan: Efektif untuk data berdimensi tinggi dan menggunakan subset dari sampel pelatihan sehingga memori lebih efisien.
+- Kekurangan: Sulit diterapkan pada problem berskala besar karena biaya komputasi yang tinggi.
 
-Deskripsi: SVM adalah algoritma yang mencoba menemukan hyperplane optimal yang dapat memisahkan data dari dua kelas dengan margin terbesar.
-
-Parameter yang Digunakan:
-C: Parameter regulasi yang mengontrol trade-off antara margin maksimal dan kesalahan klasifikasi.
-kernel: Fungsi kernel untuk mengubah ruang fitur (linear, RBF, polynomial).
-
-Kelebihan:
-Sangat efektif dalam ruang dimensi tinggi.
-Memiliki performa yang baik pada dataset kecil dengan margin yang jelas.
-
-Kekurangan: 
-Waktu komputasi yang tinggi pada dataset besar.
-Sulit untuk diinterpretasikan, terutama dengan kernel yang kompleks.
 
 # Evaluation
 
-Metrik yang akan kita gunakan pada prediksi ini adalah MSE atau Mean Squared Error yang menghitung jumlah selisih kuadrat rata-rata nilai sebenarnya dengan nilai prediksi.
+Metrik yang digunakan dalam evaluasi model prediksi pada proyek ini adalah Mean Squared Error (MSE). MSE mengukur rata-rata kuadrat selisih antara nilai sebenarnya (ground truth) dan nilai prediksi, memberikan bobot lebih besar pada kesalahan yang lebih besar karena menghitung selisih kuadrat.
 
+**Rumus MSE:**
 ![image](https://github.com/user-attachments/assets/ff4c8572-5c96-407a-97e9-9304120b5cd1)
-
-Dalam proyek ini, Mean Squared Error (MSE) digunakan untuk mengevaluasi model prediksi. MSE mengukur seberapa jauh nilai prediksi model dari nilai sebenarnya, dengan memberi bobot lebih besar pada kesalahan yang lebih besar karena menggunakan kuadrat dari selisih.
 
 Keterangan:
 N = jumlah dataset
 yi = nilai sebenarnya
 y_pred = nilai prediksi
 
-Hasil Evaluasi
+Berikut adalah tabel yang menunjukkan nilai presisi dan recall untuk setiap model:
 
-![image](https://github.com/user-attachments/assets/36e9a1b2-f5ff-44db-af70-333a5826fb6f)
+| Model               | Presisi (%) | Recall (%) |
+|---------------------|-------------|------------|
+| KNN                 | 0.067668    | 0.082806   |
+| Random Forest (RF)  | 0.014918    | 0.10448    |
+| Boosting            | 0.07228     | 0.088933   |
+| SVM                 | 0.073573    | 0.081076   |
 
-Interpretasi:
-Semakin kecil nilai MSE, semakin baik model dalam melakukan prediksi.
-Karena MSE menghitung selisih kuadrat, ini sangat sensitif terhadap outlier, sehingga model dengan nilai MSE rendah dianggap lebih stabil dan akurat dalam tugas prediksi.
+**Evaluasi Model**
+Berikut adalah hasil MSE untuk empat algoritma yang digunakan:
+- KNN: Train MSE sebesar 0.067668, test MSE sebesar 0.082806.
+- Random Forest: Train MSE yang sangat rendah, yaitu 0.014918, namun test MSE meningkat menjadi 0.10448, menunjukkan potensi overfitting.
+- AdaBoost: Train MSE sebesar 0.07228, dan test MSE 0.088933, menunjukkan performa yang konsisten antara data latih dan data uji.
+- SVM (SVR): Train MSE sebesar 0.073573, dan test MSE 0.081076, menunjukkan model yang seimbang dalam memprediksi data latih dan uji.
 
-- KNN memiliki train MSE sebesar 0.067668 dan test MSE sebesar 0.082806, menunjukkan bahwa performa model di data uji cukup konsisten dengan performa di data latih.
-- Random Forest memiliki train MSE yang sangat kecil (0.014918), namun test MSE yang relatif lebih tinggi (0.10448), yang bisa mengindikasikan overfitting, dimana model terlalu mempelajari data latih dan kurang mampu generalisasi pada data uji.
-- Boosting menunjukkan performa yang lebih konsisten antara data latih dan data uji, dengan train MSE sebesar 0.07228 dan test MSE sebesar 0.088933.
-- SVM juga memiliki train MSE sebesar 0.073573 dan test MSE sebesar 0.081076, yang menunjukkan performa yang baik dan seimbang antara data latih dan uji.
+Menampilkan plot metrik dengan bar chart
 
+![download (2)](https://github.com/user-attachments/assets/1b08181b-5646-4dba-9f8c-0a2490c96e2b)
+
+
+Interpretasi Hasil:
+- KNN: Nilai MSE pada data latih dan uji cukup konsisten, menunjukkan bahwa model ini generalisasi dengan baik pada data baru. Meskipun performanya baik, nilai test MSE sedikit lebih tinggi, menandakan adanya sedikit noise atau outlier yang memengaruhi model.
+- Random Forest: Dengan nilai MSE yang sangat kecil pada data latih namun meningkat pada data uji, model ini menunjukkan tanda overfitting. Random Forest terlalu mempelajari data latih sehingga kurang efektif saat diterapkan pada data uji yang belum dilihat sebelumnya.
+- AdaBoost: Model ini menunjukkan performa yang stabil antara data latih dan data uji. AdaBoost mampu meningkatkan akurasi tanpa overfitting berlebihan, menjadikannya pilihan yang baik untuk masalah ini.
+- SVM: Performa SVM cukup konsisten antara data latih dan uji. SVM ini menampilkan keseimbangan yang baik dalam memprediksi data, meskipun pada beberapa kasus, SVM sering kali kesulitan dalam skala besar.
+
+# Kesimpulan
+Dari hasil evaluasi MSE, model AdaBoost dan SVM menunjukkan performa yang paling konsisten antara data latih dan data uji. Keduanya memberikan prediksi yang lebih stabil dibandingkan Random Forest, yang mengalami overfitting, dan KNN, yang lebih rentan terhadap noise dalam data.
 
