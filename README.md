@@ -200,7 +200,70 @@ data_jantung
 |  48 |            1 |  True | False |               True |              False |              False |             False |           False |              True |          False |             False |              True |          False |           True |       False | -24.820727  |
 |  54 |            0 | False |  True |              False |              False |               True |             False |           False |              True |          False |              True |             False |          False |          False |        True | -43.449184  |
 
+**Split Dataset**
 
+Pada proyek ini digunakan teknik split dataset, split dataset sangat penting dilakukan sebelum tahap modelling. dan untuk melakukan, kita perlu mengimport library split data yaitu  _train_test_split_, kemudian buat 2 variabel yaitu  X yang berfungsi untuk menghapus kolom _age_ dan y untuk menampilkan kolom age lalu bagi dataset menjadi 4 variabel baru  yaitu X_train, X_test, y_train, y_test dengan library _train_test_split_ dengan parameter yang digunakan yaitu :
+* X berfungsi untuk menghapus kolom age
+* y berfungsi menampilkan kolom age
+* test_size adalah ukuran pembagian dataset yaitu sekitar 80 % untuk training dan 20 % untuk testing, data testing ini bertujuan untuk  mengukur kinerja model pada data baru.
+* random_state: digunakan untuk mengontrol random number generator yang digunakan, di proyek ini menggunakan __random_state = 123__
+
+```sh
+from sklearn.model_selection import train_test_split
+
+X = data_jantung.drop(["Age"],axis =1) 
+y = data_jantung["Age"] 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.1, random_state = 123)
+
+# Menampilkan hasil
+print(f'Total # of sample in whole dataset: {len(X)}')
+print(f'Total # of sample in train dataset: {len(X_train)}')
+print(f'Total # of sample in test dataset: {len(X_test)}')
+```
+
+![image](https://github.com/user-attachments/assets/b1ec8dfe-8e78-4fa3-957a-9ca3ac972638)
+
+**Standarisai**
+
+Algoritma machine learning memiliki performa lebih baik dan konvergen lebih cepat ketika dimodelkan pada data dengan skala relatif sama atau mendekati distribusi normal. Proses scaling dan standarisasi membantu untuk membuat fitur data menjadi bentuk yang lebih mudah diolah oleh algoritma. 
+Standardisasi adalah teknik transformasi yang paling umum digunakan dalam tahap persiapan pemodelan. Untuk fitur numerik, kita tidak akan melakukan transformasi dengan one-hot-encoding seperti pada fitur kategori. Kita akan menggunakan teknik StandarScaler dari library Scikitlearn, 
+
+```sh
+from sklearn.preprocessing import StandardScaler
+
+numerical_features = ['HeartDisease', 'dimension']
+scaler = StandardScaler()
+scaler.fit(X_train[numerical_features])
+X_train[numerical_features] = scaler.transform(X_train.loc[:, numerical_features])
+X_train[numerical_features].head()
+```
+
+|       | HeartDisease | Dimension  |
+|-------|--------------|------------|
+|  488  |    -0.873689 |   0.264232 |
+|  11   |     1.144571 |  -1.473456 |
+|  814  |     1.144571 |   1.280659 |
+|  426  |    -0.873689 |  -1.440052 |
+|  761  |     1.144571 |  -0.186384 |
+
+Proses standarisasi mengubah nilai rata-rata (mean) menjadi 0 dan nilai standar deviasi menjadi 1. Untuk mengecek nilai mean dan standar deviasi pada setelah proses standarisasi
+
+```sh
+X_train[numerical_features].describe().round(4)
+```
+
+|               | HeartDisease | dimension |
+|---------------|--------------|-----------|
+| count         | 529.0000     | 529.0000  |
+| mean          | -0.0000      | -0.0000   |
+| std           | 1.0009       | 1.0009    |
+| min           | -0.8737      | -3.0409   |
+| 25%           | -0.8737      | -0.6609   |
+| 50%           | -0.8737      | -0.1164   |
+| 75%           | 1.1446       | 0.6389    |
+| max           | 1.1446       | 3.2617    |
+
+Tabel ini menampilkan statistik deskriptif untuk dua kolom: **HeartDisease** dan **dimension**.
 
 # Modeling
 **K-Nearest Neighbors (KNN)**
