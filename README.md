@@ -16,20 +16,16 @@ Dalam proyek ini, dikembangkan sistem prediksi risiko penyakit jantung berbasis 
 - Pernyataan Masalah 1:
   Meningkatnya prevalensi penyakit jantung menjadikannya salah satu penyebab utama kematian di seluruh dunia. Penting untuk mengidentifikasi individu yang berisiko tinggi secara dini untuk pencegahan yang efektif.
 - Pernyataan Masalah 2:
-  Ada banyak faktor kesehatan yang mempengaruhi risiko penyakit jantung, seperti tekanan darah, kolesterol, usia, dan kebiasaan merokok, namun sulit untuk menentukan faktor yang paling signifikan secara manual.
-- Pernyataan Masalah 3:
   Tingginya variasi dalam data kesehatan pasien seringkali menyebabkan kesalahan dalam prediksi risiko penyakit jantung. Oleh karena itu, diperlukan pendekatan berbasis machine learning untuk meningkatkan akurasi prediksi risiko.
-- Pernyataan Masalah 4:
+- Pernyataan Masalah 3:
   Diperlukan evaluasi performa berbagai model machine learning, seperti KNN, Random Forest, Adaboost, dan SVM, untuk menemukan model yang paling optimal dalam memprediksi risiko penyakit jantung dengan akurat.
 
 ### Goals
 - Jawaban Pernyataan Masalah 1:
   Mengembangkan model prediksi risiko penyakit jantung untuk membantu pencegahan dini serta mendukung penanganan yang lebih efektif berdasarkan data kesehatan pasien.
 - Jawaban Pernyataan Masalah 2:
-  Menganalisis berbagai faktor kesehatan, seperti tekanan darah, kolesterol, usia, dan kebiasaan merokok, guna mengidentifikasi variabel yang paling signifikan dalam memengaruhi risiko penyakit jantung.
-- Jawaban Pernyataan Masalah 3:
   Menerapkan teknik machine learning untuk menangani data kesehatan pasien yang bervariasi, dengan tujuan meningkatkan akurasi prediksi risiko penyakit jantung.
-- Jawaban Pernyataan Masalah 4:
+- Jawaban Pernyataan Masalah 3:
   Membandingkan performa algoritma KNN, Random Forest, Adaboost, dan SVM, untuk menemukan model terbaik yang memberikan prediksi risiko penyakit jantung paling akurat dan andal.
   
 ### Solution Statements
@@ -111,6 +107,14 @@ for column in df_outlier:
 
 Di dalam gamabr, pada beberapa fitur numerik yang terdapat outliers. Untuk mengatasi outliers tersebut saya menggunakan metode IQR. Saya akan menggunakan metode IQR untuk mengidentifikasi outlier yang berada di luar Q1 dan Q3. Nilai apa pun yang berada di luar batas ini dianggap sebagai outlier. 
 
+# Data Preparation
+### Tahap Preparation :
+* menangani dataset categorical dengan data yang dapat dimengerti oleh mesin yaitu angka menggunakan teknik One-Hot-Encoding pada dataset categorical yaitu Sex, ChestPainType, RestingECG, ExerciseAngina dan ST_Slope 
+* Melakukan Reduksi menggunakan teknik PCA 
+* Melakukan normalisasi data numerical sehingga memiliki mean 0 dan standard deviation 1
+
+Untuk melakukan proses encoding fitur kategori, salah satu teknik yang umum dilakukan adalah teknik one-hot-encoding.
+
 **Menangani Outlier**
 ```sh
 # Select only numerical features for outlier removal
@@ -156,14 +160,6 @@ Saya telah menghapus fitur FastingBS dan MaxHr dari dataset, yang mungkin diseba
 
 ![image](https://github.com/user-attachments/assets/eac4ceb4-1842-49cd-a02f-19d28164325d)
 
-# Data Preparation
-### Tahap Preparation :
-* menangani dataset categorical dengan data yang dapat dimengerti oleh mesin yaitu angka menggunakan teknik One-Hot-Encoding pada dataset categorical yaitu Sex, ChestPainType, RestingECG, ExerciseAngina dan ST_Slope 
-* Melakukan Reduksi menggunakan teknik PCA 
-* Melakukan normalisasi data numerical sehingga memiliki mean 0 dan standard deviation 1
-
-Untuk melakukan proses encoding fitur kategori, salah satu teknik yang umum dilakukan adalah teknik one-hot-encoding.
-
 **One Hot Encoding**
 
 ```sh
@@ -198,6 +194,17 @@ data_jantung.head()
 |  48 |       138 |         214 |     1.5 |            1 |  True | False |               True |              False |              False |            False |          False |             False |          True |            False  |             True |           True |          False |       False |
 |  54 |       150 |         195 |     0.0 |            0 | False |  True |              False |              False |               True |            False |          False |              True |         False |             True  |            False |          False |          False |        True |
 
+### Reduksi Dimensi dengan PCA
+
+PCA (Principal Component Analysis) adalah teknik reduksi dimensi yang digunakan untuk merangkum informasi dari dataset dengan mengubah data ke dalam bentuk baru yang disebut komponen utama. Tujuannya adalah untuk mengurangi kompleksitas data sambil tetap mempertahankan sebanyak mungkin varians data asli. Dalam konteks analisis data jantung, PCA bisa sangat berguna untuk mengidentifikasi pola dan mengurangi jumlah fitur tanpa kehilangan informasi penting.
+
+```sh
+sns.pairplot(data_jantung[['Age', 'RestingBP', 'Cholesterol']], plot_kws={"s": 3});
+```
+
+![download (4)](https://github.com/user-attachments/assets/c90b2b46-e36d-4898-9af4-f334c4083576)
+
+
 ### TEKNIK PCA
 PCA bekerja menggunakan metode aljabar linier. Ia mengasumsikan bahwa sekumpulan data pada arah dengan varians terbesar merupakan yang paling penting (utama). PCA umumnya digunakan ketika variabel dalam data memiliki korelasi yang tinggi. Korelasi tinggi ini menunjukkan data yang berulang atau redundant. 
 
@@ -206,7 +213,7 @@ Berikut penjelasan untuk masing-masing komponen utama (PC):
 * PC kedua menangkap sebagian besar informasi yang tersisa setelah PC pertama. 
 * PC ketiga menangkap sebagian besar informasi yang tersisa setelah PC pertama, PC kedua, dst.
 
-ertama cek menggunakan fungsi pairplot 
+pertama cek menggunakan fungsi airplot 
 
 ![download (1)](https://github.com/user-attachments/assets/29490898-68c8-4dac-9f40-5baaf2859ff8)
 
