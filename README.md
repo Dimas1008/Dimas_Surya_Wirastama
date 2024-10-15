@@ -13,25 +13,25 @@ Dalam proyek ini, dikembangkan sistem prediksi risiko penyakit jantung berbasis 
 
 # Business Understanding
 ### Problem Statements
-- Pernyataan Masalah 1: 
-Meningkatnya jumlah kasus stroke membuat prediksi risiko stroke menjadi sangat penting untuk pencegahan dini.
-- Pernyataan Masalah 2: 
-Ada banyak faktor kesehatan yang mempengaruhi risiko stroke, seperti tekanan darah, kolesterol, dan usia, namun identifikasi faktor paling signifikan sulit dilakukan secara manual.
+- Pernyataan Masalah 1:
+  Meningkatnya prevalensi penyakit jantung menjadikannya salah satu penyebab utama kematian di seluruh dunia. Penting untuk mengidentifikasi individu yang berisiko tinggi secara dini untuk pencegahan yang efektif.
+- Pernyataan Masalah 2:
+  Ada banyak faktor kesehatan yang mempengaruhi risiko penyakit jantung, seperti tekanan darah, kolesterol, usia, dan kebiasaan merokok, namun sulit untuk menentukan faktor yang paling signifikan secara manual.
 - Pernyataan Masalah 3:
-Tingginya variasi dalam data kesehatan pasien seringkali menyebabkan kesalahan prediksi, sehingga diperlukan pendekatan machine learning untuk menghasilkan prediksi yang lebih akurat dan tepat waktu.
+  Tingginya variasi dalam data kesehatan pasien seringkali menyebabkan kesalahan dalam prediksi risiko penyakit jantung. Oleh karena itu, diperlukan pendekatan berbasis machine learning untuk meningkatkan akurasi prediksi risiko.
 - Pernyataan Masalah 4:
-Kebutuhan untuk membandingkan performa berbagai model machine learning seperti KNN, Random Forest, Adaboost, dan SVM guna menemukan model yang paling optimal dalam memprediksi risiko stroke secara akurat.
+  Diperlukan evaluasi performa berbagai model machine learning, seperti KNN, Random Forest, Adaboost, dan SVM, untuk menemukan model yang paling optimal dalam memprediksi risiko penyakit jantung dengan akurat.
 
 ### Goals
-- Jawaban Pernyataan Masalah 1: 
-Mengembangkan model prediksi risiko stroke untuk membantu pencegahan dini dan penanganan yang lebih efektif berdasarkan data kesehatan pasien.
+- Jawaban Pernyataan Masalah 1:
+  Mengembangkan model prediksi risiko penyakit jantung untuk membantu pencegahan dini serta mendukung penanganan yang lebih efektif berdasarkan data kesehatan pasien.
 - Jawaban Pernyataan Masalah 2:
-Menganalisis berbagai faktor kesehatan seperti tekanan darah, kolesterol, usia, dan faktor lainnya guna mengidentifikasi variabel paling signifikan yang mempengaruhi risiko stroke.
+  Menganalisis berbagai faktor kesehatan, seperti tekanan darah, kolesterol, usia, dan kebiasaan merokok, guna mengidentifikasi variabel yang paling signifikan dalam memengaruhi risiko penyakit jantung.
 - Jawaban Pernyataan Masalah 3:
-Menerapkan teknik machine learning untuk mengolah data kesehatan pasien yang bervariasi, dengan tujuan meningkatkan akurasi prediksi risiko stroke.
+  Menerapkan teknik machine learning untuk menangani data kesehatan pasien yang bervariasi, dengan tujuan meningkatkan akurasi prediksi risiko penyakit jantung.
 - Jawaban Pernyataan Masalah 4:
-Membandingkan performa model prediksi yang dibuat dengan algoritma KNN, Random Forest, Adaboost, dan SVM, untuk menemukan model terbaik yang dapat memberikan hasil prediksi yang paling akurat dan andal.
-
+  Membandingkan performa algoritma KNN, Random Forest, Adaboost, dan SVM, untuk menemukan model terbaik yang memberikan prediksi risiko penyakit jantung paling akurat dan andal.
+  
 ### Solution Statements
 - Solution 1: 
 Menggunakan Beberapa Algoritma untuk Membuat Model Prediksi Untuk mencapai prediksi risiko stroke yang akurat, solusi pertama adalah menggunakan dan membandingkan empat algoritma berbeda: K-Nearest Neighbors (KNN), Random Forest, AdaBoost, dan Support Vector Machine (SVM). Masing-masing algoritma memiliki pendekatan unik untuk memprediksi hasil berdasarkan fitur kesehatan, sehingga memungkinkan untuk menemukan model terbaik yang dapat menghasilkan prediksi akurat.
@@ -108,6 +108,53 @@ for column in df_outlier:
         plt.figure()
         sns.boxplot(data=df_outlier, x=column)
 ```
+
+Di dalam gamabr, pada beberapa fitur numerik yang terdapat outliers. Untuk mengatasi outliers tersebut saya menggunakan metode IQR. Saya akan menggunakan metode IQR untuk mengidentifikasi outlier yang berada di luar Q1 dan Q3. Nilai apa pun yang berada di luar batas ini dianggap sebagai outlier. 
+
+**Menangani Outlier**
+```sh
+# Select only numerical features for outlier removal
+numerical_features = data_jantung.select_dtypes(include=['number']).columns
+
+Q1 = data_jantung[numerical_features].quantile(0.25)
+Q3 = data_jantung[numerical_features].quantile(0.75)
+IQR = Q3 - Q1
+
+# Apply outlier removal logic only to numerical features
+data_jantung = data_jantung[~((data_jantung[numerical_features] < (Q1 - 1.5 * IQR)) | (data_jantung[numerical_features] > (Q3 + 1.5 * IQR))).any(axis=1)]
+
+# Cek ukuran dataset setelah kita drop outliers
+data_jantung.shape
+```
+
+Pada proyek ini digunakan IQR method  untuk menangani _outliers_ yang pertama definisikan dulu _outliers_ pada Q1 atau batas bawah yaitu 0.25 lalu _outliers_ pada Q3 atau batas atas  yaitu 0.75 
+kemudian hasil Q3 akan dikurangi dengan hasil Q1 setelah itu buat variabel baru yaitu _data_jantung_  untuk menampung hasil batas bawah dari pengurangan Q1 dengan 1,5 * IQR. lalu untuk hasil batas atas digunakan penambahan 1.5 * IQR dengan Q3
+
+dan jika dibuat persamaan dapat dilihat sebagai berikut :
+***
+_Batas bawah = Q1 - 1.5 * IQR_
+_Batas atas = Q3 + 1.5 * IQR_
+***
+setelah itu untuk melihat ukuran hasil penanganan _outliers_, variabel _insurance_ dapat dipanggil dengan __data_jantung.shape__ lalu akan ditampilkan hasil penanganan _outliers_
+
+![image](https://github.com/user-attachments/assets/9050ddcc-c2e4-4cf5-86c9-50bd09724b73)
+
+**Korelasi Matrik**
+
+![Screenshot 2024-10-14 130304](https://github.com/user-attachments/assets/aebf273d-4458-4eae-af34-ea1628efe020)
+
+Matriks korelasi yang ditampilkan membantu dalam memahami seberapa kuat hubungan antara fitur numerik yang digunakan dalam model prediksi. Beberapa poin penting yang bisa dimasukkan dalam evaluasi adalah:
+
+- Korelasi Antar Fitur:
+Dari matriks, terlihat bahwa fitur Age (usia) memiliki korelasi positif dengan Oldpeak (0.3) dan korelasi negatif dengan MaxHR (-0.38). Ini menunjukkan bahwa semakin tua seseorang, semakin tinggi nilai Oldpeak dan semakin rendah nilai MaxHR mereka. Hal ini bisa menjadi indikator yang penting dalam prediksi risiko penyakit jantung.
+RestingBP (tekanan darah istirahat) memiliki korelasi rendah dengan fitur lainnya, menunjukkan bahwa tekanan darah istirahat mungkin tidak terlalu signifikan berpengaruh terhadap fitur numerik lainnya, tetapi mungkin masih relevan dalam prediksi hasil akhir.
+
+- Korelasi Rendah:
+Beberapa fitur seperti Cholesterol dan RestingBP menunjukkan korelasi yang sangat rendah dengan fitur lainnya (misalnya, korelasi antara Cholesterol dan MaxHR hampir mendekati 0). Ini menunjukkan bahwa fitur-fitur tersebut mungkin kurang memengaruhi prediksi langsung, namun tetap harus dipertimbangkan apakah mereka relevan untuk dibiarkan dalam model atau dihapus dalam proses seleksi fitur.
+Penghapusan Fitur yang Kurang Relevan:
+Saya telah menghapus fitur FastingBS dan MaxHr dari dataset, yang mungkin disebabkan oleh korelasinya yang sangat rendah atau tidak signifikan dengan fitur lain. Ini adalah langkah yang tepat dalam seleksi fitur untuk meningkatkan kinerja model dengan mengurangi kompleksitas tanpa mengorbankan akurasi.
+
+![image](https://github.com/user-attachments/assets/eac4ceb4-1842-49cd-a02f-19d28164325d)
 
 # Data Preparation
 ### Tahap Preparation :
@@ -390,6 +437,12 @@ Interpretasi Hasil:
 * AdaBoost: Menunjukkan hasil yang seimbang dan tidak terlalu rentan terhadap overfitting. Performanya stabil baik di data latih maupun uji, menjadikannya kandidat yang kuat.
 * SVM: Keseimbangan yang baik antara data latih dan uji menunjukkan bahwa SVM adalah model yang mampu menangani variasi data dengan baik, walaupun kadang model ini bisa kesulitan pada dataset yang sangat besar.
 
+**Hasil Prediksi berdasarkan penghitungan  Mean Squared Error masing-masing algoritma**
+
+![Screenshot 2024-10-15 195050](https://github.com/user-attachments/assets/c5ff751f-eb52-4113-a608-3662d74fcd1f)
+
+Terlihat bahwa prediksi dari algoritma Boosting memberikan nilai yang paling mendekati nilai sebenarnya (y_true = 56) dengan prediksi 52.1, diikuti oleh SVM dengan prediksi 54.6, KNN dengan prediksi 51.1, dan Random Forest yang memiliki prediksi terjauh yaitu 44.8.
+
 **Evaluasi Terhadap Business Understanding**
 
 - Apakah sudah menjawab problem statement?
@@ -398,7 +451,7 @@ Interpretasi Hasil:
 - Apakah berhasil mencapai goals yang diharapkan?
     - Goals untuk mendapatkan model yang mampu memprediksi biaya medis dengan konsistensi tinggi tercapai dengan model AdaBoost dan SVM, yang menunjukkan stabilitas antara data latih dan uji. Ini memberikan kepercayaan bahwa model dapat diandalkan untuk digunakan pada data baru.
 
-- Apakah solusi statement yang kamu rencanakan berdampak?
+- Apakah solusi statement yang rencanakan berdampak?
     - Ya, solusi dengan menggunakan berbagai algoritma dan mengevaluasinya berdasarkan MSE telah memberikan insight penting mengenai kekuatan dan kelemahan tiap model. Dampaknya adalah dapat mengidentifikasi model yang paling optimal untuk digunakan dalam memprediksi biaya medis dengan akurasi yang lebih tinggi, sehingga dapat mendukung pengambilan keputusan yang lebih baik.
 
 # Kesimpulan
