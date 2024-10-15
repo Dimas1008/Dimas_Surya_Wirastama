@@ -3,7 +3,7 @@
 
 # Domain Proyek
 ### Latar Belakang
-enyakit jantung merupakan salah satu penyebab utama kematian di seluruh dunia. Setiap tahunnya, jutaan orang mengalami gangguan kesehatan serius yang berkaitan dengan jantung, seperti serangan jantung dan gagal jantung. Di Indonesia, penyakit jantung menjadi salah satu penyebab kematian tertinggi, terutama pada kelompok usia lanjut, yang menunjukkan urgensi deteksi dini untuk faktor-faktor risiko penyakit jantung.
+Penyakit jantung merupakan salah satu penyebab utama kematian di seluruh dunia. Setiap tahunnya, jutaan orang mengalami gangguan kesehatan serius yang berkaitan dengan jantung, seperti serangan jantung dan gagal jantung. Di Indonesia, penyakit jantung menjadi salah satu penyebab kematian tertinggi, terutama pada kelompok usia lanjut, yang menunjukkan urgensi deteksi dini untuk faktor-faktor risiko penyakit jantung.
 
 Faktor risiko seperti usia, tekanan darah, kadar kolesterol, kebiasaan merokok, indeks massa tubuh (BMI), dan riwayat diabetes, memiliki peran penting dalam memprediksi potensi terjadinya penyakit jantung. Mengingat banyaknya faktor risiko yang harus dipertimbangkan, memprediksi penyakit jantung secara manual menjadi tugas yang rumit dan rentan terhadap kesalahan.
 
@@ -41,12 +41,7 @@ Menggunakan Beberapa Algoritma untuk Membuat Model Prediksi Untuk mencapai predi
     - SVM: Model klasifikasi yang bekerja baik dalam ruang dimensi tinggi dan digunakan untuk dataset yang kompleks dengan kelas yang dapat dipisahkan.
 
 - Solution 2: 
-Hyperparameter Tuning untuk Peningkatan Model
-Setelah membandingkan performa awal dari empat algoritma di atas, langkah selanjutnya adalah melakukan hyperparameter tuning untuk meningkatkan kinerja model terbaik. Hyperparameter tuning dilakukan dengan menggunakan metode seperti GridSearchCV atau RandomizedSearchCV, untuk mencari kombinasi parameter optimal yang menghasilkan model dengan performa terbaik.
-    - Random Forest, tuning dapat dilakukan pada jumlah estimators, max depth, dan minimum samples per leaf.
-    - SVM, tuning dapat dilakukan pada kernel (linear, RBF), gamma, dan C.
-    - KNN, tuning dilakukan pada jumlah tetangga (K).
-    - AdaBoost, tuning dilakukan pada learning rate dan jumlah estimators.
+Menggunakan _Mean squared error_ masing-masing algoritma pada data train dan test
 
 # Data Understanding
 Dataset ini dapat diakses menggunakan [Kaggle](https://www.kaggle.com/datasets/fedesoriano/heart-failure-prediction)
@@ -76,10 +71,14 @@ Pada Fungsi info() di pandas yang digunakan untuk menampilkan informasi dari dat
 
 ![Screenshot 2024-10-15 002725](https://github.com/user-attachments/assets/d0cd8d6b-e982-403b-8b6a-86fe633d6a57)
 
-Pada fungsi describe() yang berfungsi untuk menampilkan statistik dari dataset dan deskripsi pada dataset
+dari output pada gambar, dapat dilihat bahwa :
+* Terdapat 5 kolom dengan tipe objek yaitu : Sex, ChestPainType, RestingECG, ExerciseAngina dan ST_Slope. kolom ini merupakan  categorical features (fitur non-numerik)
+* Terdapat 6 kolom bertipe numerik dengan tipe data int64 yaitu Age, RestingBP, Cholesterol, FastingBS, MaxHR dan HeartDisease.
+* Terdapat 1 kolom bertipe numerik dengan tipe data float64 yaitu OldPeak.
 
 ![Screenshot 2024-10-15 002913](https://github.com/user-attachments/assets/0bccff20-d548-4259-89ea-f1cf509c755e)
 
+Pada fungsi describe() yang berfungsi untuk menampilkan statistik dari dataset dan deskripsi pada dataset
 Fungsi describe() memberikan informasi statistik pada masing-masing kolom, antara lain:
 * Count  adalah jumlah sampel pada data.
 * Mean adalah nilai rata-rata 
@@ -95,7 +94,9 @@ Pada proyek ini  digunakan fungsi isnull().sum() yang berfungsi untuk menemukan 
 
 ![image](https://github.com/user-attachments/assets/0c6fb89a-94b2-4bb9-af5b-8754c8fc7f7b)
 
-### Visuali Data
+Berdasarkan output pada gambar dapat dilihat bahwa tidak ditemukan _missing value_ pada masing masing kolom di dataset 
+
+### Visualisasi Data
 Visualisai ini digunakan untuk melihat apakah ada data yang terdapat indikasi outlier atau tidak
 
 ![image](https://github.com/user-attachments/assets/100a161b-9a67-467d-a7d9-5a85b6673b42)
@@ -142,7 +143,6 @@ data_jantung.drop(['Sex', 'ChestPainType', 'RestingECG', 'ExerciseAngina', 'ST_S
 data_jantung.head()
 ```
 
-
 | Age | RestingBP | Cholesterol | Oldpeak | HeartDisease | Sex_F | Sex_M | ChestPainType_ASY  | ChestPainType_ATA  | ChestPainType_NAP  | ChestPainType_TA | RestingECG_LVH | RestingECG_Normal | RestingECG_ST | ExerciseAngina_N  | ExerciseAngina_Y | ST_Slope_Down  | ST_Slope_Flat  | ST_Slope_Up |
 |-----|-----------|-------------|---------|--------------|-------|-------|--------------------|--------------------|--------------------|------------------|----------------|-------------------|---------------|-------------------|------------------|----------------|----------------|-------------|
 |  40 |       140 |         289 |     0.0 |            0 | False |  True |              False |               True |              False |            False |          False |             False |          True |            False  |             True |          False |          False |        True |
@@ -151,7 +151,7 @@ data_jantung.head()
 |  48 |       138 |         214 |     1.5 |            1 |  True | False |               True |              False |              False |            False |          False |             False |          True |            False  |             True |           True |          False |       False |
 |  54 |       150 |         195 |     0.0 |            0 | False |  True |              False |              False |               True |            False |          False |              True |         False |             True  |            False |          False |          False |        True |
 
-**TEKNIK PCA**
+### TEKNIK PCA
 PCA bekerja menggunakan metode aljabar linier. Ia mengasumsikan bahwa sekumpulan data pada arah dengan varians terbesar merupakan yang paling penting (utama). PCA umumnya digunakan ketika variabel dalam data memiliki korelasi yang tinggi. Korelasi tinggi ini menunjukkan data yang berulang atau redundant. 
 
 Berikut penjelasan untuk masing-masing komponen utama (PC):
@@ -159,7 +159,7 @@ Berikut penjelasan untuk masing-masing komponen utama (PC):
 * PC kedua menangkap sebagian besar informasi yang tersisa setelah PC pertama. 
 * PC ketiga menangkap sebagian besar informasi yang tersisa setelah PC pertama, PC kedua, dst.
 
-Pertama cek menggunakan fungsi pairplot 
+ertama cek menggunakan fungsi pairplot 
 
 ![download (1)](https://github.com/user-attachments/assets/29490898-68c8-4dac-9f40-5baaf2859ff8)
 
@@ -200,7 +200,7 @@ data_jantung
 |  48 |            1 |  True | False |               True |              False |              False |             False |           False |              True |          False |             False |              True |          False |           True |       False | -24.820727  |
 |  54 |            0 | False |  True |              False |              False |               True |             False |           False |              True |          False |              True |             False |          False |          False |        True | -43.449184  |
 
-**Split Dataset**
+### Split Dataset
 
 Pada proyek ini digunakan teknik split dataset, split dataset sangat penting dilakukan sebelum tahap modelling. dan untuk melakukan, kita perlu mengimport library split data yaitu  _train_test_split_, kemudian buat 2 variabel yaitu  X yang berfungsi untuk menghapus kolom _age_ dan y untuk menampilkan kolom age lalu bagi dataset menjadi 4 variabel baru  yaitu X_train, X_test, y_train, y_test dengan library _train_test_split_ dengan parameter yang digunakan yaitu :
 * X berfungsi untuk menghapus kolom age
@@ -223,7 +223,7 @@ print(f'Total # of sample in test dataset: {len(X_test)}')
 
 ![image](https://github.com/user-attachments/assets/b1ec8dfe-8e78-4fa3-957a-9ca3ac972638)
 
-**Standarisai**
+### Standarisai
 
 Algoritma machine learning memiliki performa lebih baik dan konvergen lebih cepat ketika dimodelkan pada data dengan skala relatif sama atau mendekati distribusi normal. Proses scaling dan standarisasi membantu untuk membuat fitur data menjadi bentuk yang lebih mudah diolah oleh algoritma. 
 Standardisasi adalah teknik transformasi yang paling umum digunakan dalam tahap persiapan pemodelan. Untuk fitur numerik, kita tidak akan melakukan transformasi dengan one-hot-encoding seperti pada fitur kategori. Kita akan menggunakan teknik StandarScaler dari library Scikitlearn, 
@@ -324,7 +324,7 @@ Proses ini diulangi sampai akurasi yang diinginkan tercapai.
     - Kelebihan: Mudah diimplementasikan dan cepat dalam pengujian, cocok untuk real-time implementation.
     - Kekurangan: Memerlukan hypertuning yang tepat untuk performa optimal.
 
-### VM (Support Vector Machine)
+### SVM (Support Vector Machine)
 SVM adalah algoritma yang bertujuan mencari hyperplane terbaik untuk memisahkan data dalam ruang berdimensi tinggi. Dalam proyek ini, digunakan Support Vector Regressor (SVR), yang merupakan versi regresi dari SVM.
 
 **Cara Kerja Umum SVR**
@@ -356,24 +356,53 @@ Berikut adalah tabel yang menunjukkan nilai presisi dan recall untuk setiap mode
 | Boosting            | 0.07228     | 0.088933   |
 | SVM                 | 0.073573    | 0.081076   |
 
-**Evaluasi Model**
-Berikut adalah hasil MSE untuk empat algoritma yang digunakan:
-- KNN: Train MSE sebesar 0.067668, test MSE sebesar 0.082806.
-- Random Forest: Train MSE yang sangat rendah, yaitu 0.014918, namun test MSE meningkat menjadi 0.10448, menunjukkan potensi overfitting.
-- AdaBoost: Train MSE sebesar 0.07228, dan test MSE 0.088933, menunjukkan performa yang konsisten antara data latih dan data uji.
-- SVM (SVR): Train MSE sebesar 0.073573, dan test MSE 0.081076, menunjukkan model yang seimbang dalam memprediksi data latih dan uji.
+**Evaluasi**
 
+Berikut adalah hasil evaluasi menggunakan Mean Squared Error (MSE) untuk empat algoritma yang digunakan:
+
+* KNN:
+    - Train MSE: 0.067668
+    - Test MSE: 0.082806
+    - Interpretasi: Model KNN menunjukkan hasil yang cukup konsisten antara data latih dan data uji. Meskipun nilai MSE untuk data uji sedikit lebih tinggi, hal ini mengindikasikan adanya noise atau outlier dalam data, namun secara umum model KNN mampu melakukan generalisasi yang baik.
+
+* Random Forest:
+    - Train MSE: 0.014918
+    - Test MSE: 0.10448
+    - Interpretasi: Meskipun Random Forest memiliki nilai MSE yang sangat rendah pada data latih, test MSE yang lebih tinggi menandakan model ini mengalami overfitting. Model terlalu fokus pada data latih dan kurang mampu menangani data baru.
+      
+* AdaBoost:
+    - Train MSE: 0.07228
+    - Test MSE: 0.088933
+    - Interpretasi: AdaBoost menunjukkan hasil yang lebih stabil antara data latih dan data uji. Performa yang konsisten ini menunjukkan bahwa model mampu menghasilkan prediksi yang baik tanpa mengalami overfitting.
+
+* SVM (SVR):
+    - Train MSE: 0.073573
+    - Test MSE: 0.081076
+    - Interpretasi: SVM menampilkan performa yang seimbang antara data latih dan uji, menunjukkan kemampuannya dalam generalisasi yang baik pada data baru, dan model ini relatif lebih stabil dalam menangani berbagai data.
 Menampilkan plot metrik dengan bar chart
 
 ![download (2)](https://github.com/user-attachments/assets/1b08181b-5646-4dba-9f8c-0a2490c96e2b)
 
-
 Interpretasi Hasil:
-- KNN: Nilai MSE pada data latih dan uji cukup konsisten, menunjukkan bahwa model ini generalisasi dengan baik pada data baru. Meskipun performanya baik, nilai test MSE sedikit lebih tinggi, menandakan adanya sedikit noise atau outlier yang memengaruhi model.
-- Random Forest: Dengan nilai MSE yang sangat kecil pada data latih namun meningkat pada data uji, model ini menunjukkan tanda overfitting. Random Forest terlalu mempelajari data latih sehingga kurang efektif saat diterapkan pada data uji yang belum dilihat sebelumnya.
-- AdaBoost: Model ini menunjukkan performa yang stabil antara data latih dan data uji. AdaBoost mampu meningkatkan akurasi tanpa overfitting berlebihan, menjadikannya pilihan yang baik untuk masalah ini.
-- SVM: Performa SVM cukup konsisten antara data latih dan uji. SVM ini menampilkan keseimbangan yang baik dalam memprediksi data, meskipun pada beberapa kasus, SVM sering kali kesulitan dalam skala besar.
+
+* KNN: Performanya cukup konsisten namun sedikit lebih rentan terhadap noise dalam data. Dengan perbedaan kecil antara train dan test MSE, model ini dapat menangani variasi data baru dengan baik.
+* Random Forest: Mengalami overfitting karena perbedaan yang signifikan antara train dan test MSE, sehingga kurang cocok untuk data baru.
+* AdaBoost: Menunjukkan hasil yang seimbang dan tidak terlalu rentan terhadap overfitting. Performanya stabil baik di data latih maupun uji, menjadikannya kandidat yang kuat.
+* SVM: Keseimbangan yang baik antara data latih dan uji menunjukkan bahwa SVM adalah model yang mampu menangani variasi data dengan baik, walaupun kadang model ini bisa kesulitan pada dataset yang sangat besar.
+
+**Evaluasi Terhadap Business Understanding**
+
+- Apakah sudah menjawab problem statement?
+    - Ya, model yang digunakan telah membantu menjawab problem statement, terutama dalam prediksi biaya medis berdasarkan fitur-fitur seperti usia, BMI, jumlah anak, jenis kelamin, status perokok, dan region. Evaluasi MSE membantu mengukur tingkat kesalahan dari prediksi yang dihasilkan.
+
+- Apakah berhasil mencapai goals yang diharapkan?
+    - Goals untuk mendapatkan model yang mampu memprediksi biaya medis dengan konsistensi tinggi tercapai dengan model AdaBoost dan SVM, yang menunjukkan stabilitas antara data latih dan uji. Ini memberikan kepercayaan bahwa model dapat diandalkan untuk digunakan pada data baru.
+
+- Apakah solusi statement yang kamu rencanakan berdampak?
+    - Ya, solusi dengan menggunakan berbagai algoritma dan mengevaluasinya berdasarkan MSE telah memberikan insight penting mengenai kekuatan dan kelemahan tiap model. Dampaknya adalah dapat mengidentifikasi model yang paling optimal untuk digunakan dalam memprediksi biaya medis dengan akurasi yang lebih tinggi, sehingga dapat mendukung pengambilan keputusan yang lebih baik.
 
 # Kesimpulan
-Dari hasil evaluasi MSE, model AdaBoost dan SVM menunjukkan performa yang paling konsisten antara data latih dan data uji. Keduanya memberikan prediksi yang lebih stabil dibandingkan Random Forest, yang mengalami overfitting, dan KNN, yang lebih rentan terhadap noise dalam data.
+Dari evaluasi ini, model AdaBoost dan SVM menunjukkan performa yang lebih konsisten dan stabil dibandingkan model lainnya, terutama dalam menjaga keseimbangan antara data latih dan data uji. Model Random Forest, meskipun memiliki MSE rendah pada data latih, mengalami overfitting, dan KNN sedikit lebih rentan terhadap noise.
+
+
 
