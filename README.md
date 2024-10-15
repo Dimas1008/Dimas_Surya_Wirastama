@@ -109,9 +109,10 @@ Di dalam gamabr, pada beberapa fitur numerik yang terdapat outliers. Untuk menga
 
 # Data Preparation
 ### Tahap Preparation :
-* menangani dataset categorical dengan data yang dapat dimengerti oleh mesin yaitu angka menggunakan teknik One-Hot-Encoding pada dataset categorical yaitu Sex, ChestPainType, RestingECG, ExerciseAngina dan ST_Slope 
-* Melakukan Reduksi menggunakan teknik PCA 
-* Melakukan normalisasi data numerical sehingga memiliki mean 0 dan standard deviation 1
+- Menangani Fitur Kategorikal: Data kategorikal seperti Sex, ChestPainType, RestingECG, ExerciseAngina, dan ST_Slope tidak dapat langsung digunakan oleh algoritma machine learning yang bekerja dengan angka. Oleh karena itu, fitur-fitur ini diubah menjadi bentuk numerik menggunakan teknik One-Hot-Encoding. Teknik ini akan membuat kolom biner untuk setiap kategori, sehingga memungkinkan model memahami perbedaan di antara kategori tersebut.
+- Mengatasi Outliers: Untuk fitur numerik, dilakukan penanganan outliers dengan menggunakan Metode IQR (Interquartile Range). Metode ini menentukan batas bawah dan atas dari data yang dianggap normal dengan perhitungan
+- Reduksi Dimensi dengan PCA: Fitur numerik dengan korelasi tinggi atau informasi redundan bisa membuat model lebih kompleks tanpa menambah performa. Oleh karena itu, Principal Component Analysis (PCA) diterapkan untuk mereduksi jumlah fitur dengan tetap mempertahankan varians data. Ini membantu mengurangi kompleksitas tanpa kehilangan informasi penting.
+- Normalisasi Data Numerik: Setelah mengatasi outliers, fitur numerik dinormalisasi menggunakan StandardScaler untuk memastikan setiap fitur memiliki mean 0 dan standar deviasi 1. Proses ini penting untuk menghindari bias dalam model akibat skala fitur yang berbeda-beda.
 
 Untuk melakukan proses encoding fitur kategori, salah satu teknik yang umum dilakukan adalah teknik one-hot-encoding.
 
