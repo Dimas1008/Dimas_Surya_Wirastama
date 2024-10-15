@@ -3,13 +3,13 @@
 
 # Domain Proyek
 ### Latar Belakang
-Stroke merupakan salah satu penyebab utama kematian dan kecacatan di seluruh dunia. Setiap tahunnya, jutaan orang mengalami stroke, yang tidak hanya berdampak signifikan pada kesehatan individu, tetapi juga menimbulkan beban ekonomi bagi keluarga dan sistem kesehatan. Di Indonesia, stroke menjadi penyebab kematian tertinggi, terutama di kalangan dewasa lanjut usia, sehingga penting untuk mendeteksi faktor risiko sejak dini.
+enyakit jantung merupakan salah satu penyebab utama kematian di seluruh dunia. Setiap tahunnya, jutaan orang mengalami gangguan kesehatan serius yang berkaitan dengan jantung, seperti serangan jantung dan gagal jantung. Di Indonesia, penyakit jantung menjadi salah satu penyebab kematian tertinggi, terutama pada kelompok usia lanjut, yang menunjukkan urgensi deteksi dini untuk faktor-faktor risiko penyakit jantung.
 
-Faktor-faktor risiko seperti usia, tekanan darah, kadar kolesterol, kebiasaan merokok, dan riwayat penyakit jantung memainkan peran kunci dalam kemungkinan terjadinya stroke. Dengan meningkatnya jumlah pasien yang berisiko, prediksi stroke menggunakan metode konvensional sering kali tidak cukup akurat dan tidak mampu memberikan hasil yang cepat dan tepat waktu.
+Faktor risiko seperti usia, tekanan darah, kadar kolesterol, kebiasaan merokok, indeks massa tubuh (BMI), dan riwayat diabetes, memiliki peran penting dalam memprediksi potensi terjadinya penyakit jantung. Mengingat banyaknya faktor risiko yang harus dipertimbangkan, memprediksi penyakit jantung secara manual menjadi tugas yang rumit dan rentan terhadap kesalahan.
 
-Dengan adanya perkembangan teknologi dalam bidang kecerdasan buatan (AI) dan machine learning (ML), muncul peluang untuk meningkatkan kemampuan prediksi stroke berdasarkan analisis data medis. Model machine learning dapat membantu dokter dan tenaga medis dalam memberikan diagnosis yang lebih cepat dan akurat, sehingga upaya pencegahan dan pengobatan dapat dilakukan lebih awal, mengurangi tingkat kematian dan kecacatan akibat stroke.
+Dengan kemajuan teknologi dalam kecerdasan buatan (AI) dan pembelajaran mesin (ML), terdapat peluang untuk meningkatkan kemampuan prediksi risiko penyakit jantung secara lebih cepat dan akurat. Penggunaan model machine learning dapat membantu tenaga medis dalam memberikan diagnosis yang lebih baik berdasarkan data kesehatan pasien, yang pada akhirnya dapat meningkatkan upaya pencegahan dan pengobatan.
 
-Melalui proyek ini, saya mengembangkan sebuah sistem prediksi risiko stroke berbasis machine learning menggunakan berbagai model seperti K-Nearest Neighbor (KNN), Random Forest, Gradient Boosting dan Svm. Dengan memanfaatkan data riwayat medis pasien, sistem ini diharapkan dapat membantu meningkatkan kualitas layanan kesehatan dalam mengidentifikasi risiko stroke pada pasien secara lebih efektif.
+Dalam proyek ini, dikembangkan sistem prediksi risiko penyakit jantung berbasis machine learning menggunakan berbagai model seperti K-Nearest Neighbor (KNN), Random Forest, Gradient Boosting, dan Support Vector Machine (SVM). Dengan memanfaatkan data medis seperti tekanan darah, kadar kolesterol, dan riwayat kesehatan pasien, sistem ini diharapkan dapat membantu mengidentifikasi risiko penyakit jantung secara lebih efektif, sehingga dapat mengurangi angka kematian dan meningkatkan kualitas hidup pasien melalui deteksi dan intervensi dini.
 
 # Business Understanding
 ### Problem Statements
@@ -17,10 +17,10 @@ Melalui proyek ini, saya mengembangkan sebuah sistem prediksi risiko stroke berb
 Meningkatnya jumlah kasus stroke membuat prediksi risiko stroke menjadi sangat penting untuk pencegahan dini.
 - Pernyataan Masalah 2: 
 Ada banyak faktor kesehatan yang mempengaruhi risiko stroke, seperti tekanan darah, kolesterol, dan usia, namun identifikasi faktor paling signifikan sulit dilakukan secara manual.
-- Pernyataan Masalah 3: 
-Bagaimana cara melakukan pra-pemrosesan data agar dapat digunakan untuk membuat model?
-- Pernyataan Masalah 4: 
-Bagaimana cara membuat model prediksi berdasarkan dari 4 algoritma yaitu KNN, Random Forest, Adaboost, dan SVM?
+- Pernyataan Masalah 3:
+Tingginya variasi dalam data kesehatan pasien seringkali menyebabkan kesalahan prediksi, sehingga diperlukan pendekatan machine learning untuk menghasilkan prediksi yang lebih akurat dan tepat waktu.
+- Pernyataan Masalah 4:
+Kebutuhan untuk membandingkan performa berbagai model machine learning seperti KNN, Random Forest, Adaboost, dan SVM guna menemukan model yang paling optimal dalam memprediksi risiko stroke secara akurat.
 
 ### Goals
 - Jawaban Pernyataan Masalah 1: 
@@ -28,9 +28,9 @@ Mengembangkan model prediksi risiko stroke untuk membantu pencegahan dini dan pe
 - Jawaban Pernyataan Masalah 2:
 Menganalisis berbagai faktor kesehatan seperti tekanan darah, kolesterol, usia, dan faktor lainnya guna mengidentifikasi variabel paling signifikan yang mempengaruhi risiko stroke.
 - Jawaban Pernyataan Masalah 3:
-Melakukan pra-pemrosesan data yang meliputi penanganan missing values, normalisasi, encoding fitur kategori, dan pembagian data untuk memastikan data siap digunakan dalam model machine learning.
+Menerapkan teknik machine learning untuk mengolah data kesehatan pasien yang bervariasi, dengan tujuan meningkatkan akurasi prediksi risiko stroke.
 - Jawaban Pernyataan Masalah 4:
-Membuat model prediksi menggunakan empat algoritma (KNN, Random Forest, Adaboost, dan SVM) serta melakukan perbandingan performa di antara model-model tersebut untuk menemukan model dengan akurasi terbaik.
+Membandingkan performa model prediksi yang dibuat dengan algoritma KNN, Random Forest, Adaboost, dan SVM, untuk menemukan model terbaik yang dapat memberikan hasil prediksi yang paling akurat dan andal.
 
 ### Solution Statements
 - Solution 1: 
