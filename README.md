@@ -95,11 +95,6 @@ Pada proyek ini  digunakan fungsi isnull().sum() yang berfungsi untuk menemukan 
 
 ![image](https://github.com/user-attachments/assets/0c6fb89a-94b2-4bb9-af5b-8754c8fc7f7b)
 
-Jika ada angka di salah satu tabel maka disitu ada data yang missing values, jika ada missing value gunakan kode berikut :
-```sh
-data_jantung = data_stroke.dropna()
-```
-
 ### Visuali Data
 Visualisai ini digunakan untuk melihat apakah ada data yang terdapat indikasi outlier atau tidak
 
@@ -114,38 +109,98 @@ for column in df_outlier:
 ```
 
 # Data Preparation
-1. Missing Data Handling (Penanganan Data Kosong)
-Langkah pertama yang dilakukan adalah mengecek apakah ada data yang hilang (missing values) dalam dataset. Data yang hilang dapat menyebabkan bias pada model, sehingga perlu ditangani.
-    - Proses:
-Mengecek keberadaan missing values pada setiap kolom.
-Jika ditemukan data yang hilang, beberapa teknik yang bisa digunakan adalah:
-Menghapus baris atau kolom dengan missing values (jika data yang hilang cukup banyak).
-Imputasi menggunakan mean, median, atau modus (untuk kolom numerik atau kategori).
-    - Alasan: 
-Penanganan missing values penting agar model tidak mengalami error saat training dan mengurangi potensi bias.
+### Tahap Preparation :
+* menangani dataset categorical dengan data yang dapat dimengerti oleh mesin yaitu angka menggunakan teknik One-Hot-Encoding pada dataset categorical yaitu Sex, ChestPainType, RestingECG, ExerciseAngina dan ST_Slope 
+* Melakukan Reduksi menggunakan teknik PCA 
+* Melakukan normalisasi data numerical sehingga memiliki mean 0 dan standard deviation 1
 
-2. Feature Encoding (Pengkodean Fitur Kategori)
-Beberapa fitur dalam dataset seperti Sex, ChestPainType, RestingECG, ExerciseAngina, dan ST_Slope merupakan variabel kategori. Algoritma machine learning hanya bisa memproses data numerik, sehingga kita perlu mengubah data kategori ini menjadi angka.
-    - Proses:
-Menggunakan One-Hot Encoding untuk variabel kategori nominal (misalnya ChestPainType, RestingECG, dll).
-Menggunakan Label Encoding untuk variabel biner atau ordinal seperti Sex dan ExerciseAngina.
-    - Alasan: 
-Encoding diperlukan agar fitur kategori dapat digunakan oleh algoritma machine learning yang membutuhkan data dalam bentuk numerik.
+Untuk melakukan proses encoding fitur kategori, salah satu teknik yang umum dilakukan adalah teknik one-hot-encoding.
 
-3. Feature Scaling (Normalisasi Fitur)
-Fitur-fitur numerik seperti Age, RestingBP, Cholesterol, MaxHR, dan Oldpeak memiliki rentang nilai yang berbeda. Hal ini dapat menyebabkan algoritma machine learning tertentu, terutama yang berbasis jarak seperti KNN atau SVM, menjadi bias terhadap fitur dengan nilai besar.
-    - Proses:
-Menggunakan teknik Standardization atau Min-Max Scaling untuk memastikan bahwa semua fitur numerik memiliki skala yang sama.
-    - Alasan: 
-Normalisasi memastikan bahwa semua fitur berkontribusi secara proporsional pada model, tanpa dipengaruhi oleh perbedaan skala yang besar.
+**One Hot Encoding**
 
-4. Feature Selection (Pemilihan Fitur)
-Sebelum melanjutkan ke pemodelan, penting untuk memilih fitur-fitur yang paling relevan. Pemilihan fitur dilakukan berdasarkan analisis korelasi atau teknik lain untuk mengidentifikasi variabel yang memiliki hubungan kuat dengan variabel target HeartDisease.
-    - Proses:
-Menggunakan Heatmap Korelasi untuk melihat hubungan antar fitur dan variabel target.
-Menghapus fitur yang memiliki korelasi rendah atau redundan.
-    - Alasan: 
-Pemilihan fitur membantu meningkatkan efisiensi model, mengurangi overfitting, dan mempercepat waktu pelatihan.
+```sh
+from sklearn.preprocessing import OneHotEncoder
+# Melakukan One-Hot Encoding pada kolom 'Sex'
+data_jantung = pd.concat([data_jantung, pd.get_dummies(data_jantung['Sex'], prefix='Sex')], axis=1)
+
+# Melakukan One-Hot Encoding pada kolom 'ChestPainType'
+data_jantung = pd.concat([data_jantung, pd.get_dummies(data_jantung['ChestPainType'], prefix='ChestPainType')], axis=1)
+
+# Melakukan One-Hot Encoding pada kolom 'RestingECG'
+data_jantung = pd.concat([data_jantung, pd.get_dummies(data_jantung['RestingECG'], prefix='RestingECG')], axis=1)
+
+# Melakukan One-Hot Encoding pada kolom 'ExerciseAngina'
+data_jantung = pd.concat([data_jantung, pd.get_dummies(data_jantung['ExerciseAngina'], prefix='ExerciseAngina')], axis=1)
+
+# Melakukan One-Hot Encoding pada kolom 'ST_Slope'
+data_jantung = pd.concat([data_jantung, pd.get_dummies(data_jantung['ST_Slope'], prefix='ST_Slope')], axis=1)
+
+# Menghapus kolom asli yang sudah di-encode
+data_jantung.drop(['Sex', 'ChestPainType', 'RestingECG', 'ExerciseAngina', 'ST_Slope'], axis=1, inplace=True)
+
+# Melihat data setelah encoding
+data_jantung.head()
+```
+
+
+| Age | RestingBP | Cholesterol | Oldpeak | HeartDisease | Sex_F | Sex_M | ChestPainType_ASY  | ChestPainType_ATA  | ChestPainType_NAP  | ChestPainType_TA | RestingECG_LVH | RestingECG_Normal | RestingECG_ST | ExerciseAngina_N  | ExerciseAngina_Y | ST_Slope_Down  | ST_Slope_Flat  | ST_Slope_Up |
+|-----|-----------|-------------|---------|--------------|-------|-------|--------------------|--------------------|--------------------|------------------|----------------|-------------------|---------------|-------------------|------------------|----------------|----------------|-------------|
+|  40 |       140 |         289 |     0.0 |            0 | False |  True |              False |               True |              False |            False |          False |             False |          True |            False  |             True |          False |          False |        True |
+|  49 |       160 |         180 |     1.0 |            1 |  True | False |              False |              False |               True |            False |          False |             False |          True |            False  |             True |          False |           True |       False |
+|  37 |       130 |         283 |     0.0 |            0 | False |  True |              False |               True |              False |            False |          False |              True |         False |             True  |            False |          False |          False |        True |
+|  48 |       138 |         214 |     1.5 |            1 |  True | False |               True |              False |              False |            False |          False |             False |          True |            False  |             True |           True |          False |       False |
+|  54 |       150 |         195 |     0.0 |            0 | False |  True |              False |              False |               True |            False |          False |              True |         False |             True  |            False |          False |          False |        True |
+
+**TEKNIK PCA**
+PCA bekerja menggunakan metode aljabar linier. Ia mengasumsikan bahwa sekumpulan data pada arah dengan varians terbesar merupakan yang paling penting (utama). PCA umumnya digunakan ketika variabel dalam data memiliki korelasi yang tinggi. Korelasi tinggi ini menunjukkan data yang berulang atau redundant. 
+
+Berikut penjelasan untuk masing-masing komponen utama (PC):
+* PC pertama mewakili arah varians maksimum dalam data. Ia paling banyak menangkap informasi dari semua fitur dalam data. 
+* PC kedua menangkap sebagian besar informasi yang tersisa setelah PC pertama. 
+* PC ketiga menangkap sebagian besar informasi yang tersisa setelah PC pertama, PC kedua, dst.
+
+Pertama cek menggunakan fungsi pairplot 
+
+![download (1)](https://github.com/user-attachments/assets/29490898-68c8-4dac-9f40-5baaf2859ff8)
+
+aplikasikan class PCA dari library scikit learn 
+
+```sh
+from sklearn.decomposition import PCA
+
+pca = PCA(n_components=3, random_state=123)
+pca.fit(data_jantung[['RestingBP', 'Cholesterol', 'Oldpeak']])
+princ_comp = pca.transform(data_jantung[['RestingBP', 'Cholesterol', 'Oldpeak']])
+```
+
+proporsi informasi dari ketiga komponen yang dimasukkan
+
+![image](https://github.com/user-attachments/assets/0cbca08d-8dc3-4daa-8ea6-852f54fda091)
+
+Membuat fitur baru :
+* Gunakan n_component = 1, karena kali ini, jumlah komponen kita hanya satu.
+* Fit model dengan data masukan.
+* Tambahkan fitur baru ke dataset dengan nama 'dimension' dan lakukan proses transformasi.
+* Drop kolom yang dimasukkan.
+
+```sh
+from sklearn.decomposition import PCA
+pca = PCA(n_components=1, random_state=123)
+pca.fit(data_jantung[['RestingBP', 'Cholesterol', 'Oldpeak']])
+data_jantung['dimension'] = pca.transform(data_jantung.loc[:, ('RestingBP', 'Cholesterol', 'Oldpeak')]).flatten()
+data_jantung.drop(['RestingBP', 'Cholesterol', 'Oldpeak'], axis=1, inplace=True)
+data_jantung
+```
+
+| Age | HeartDisease | Sex_F | Sex_M | ChestPainType_ASY  | ChestPainType_ATA  | ChestPainType_NAP  | ChestPainType_TA  | RestingECG_LVH  | RestingECG_Normal | RestingECG_ST  | ExerciseAngina_N  | ExerciseAngina_Y  | ST_Slope_Down  | ST_Slope_Flat  | ST_Slope_Up | Dimension   |
+|-----|--------------|-------|-------|--------------------|--------------------|--------------------|-------------------|-----------------|-------------------|----------------|-------------------|-------------------|----------------|----------------|-------------|-------------|
+|  40 |            0 | False |  True |              False |               True |              False |             False |           False |              True |          False |              True |             False |          False |          False |        True |  50.203699  |
+|  49 |            1 |  True | False |              False |              False |               True |             False |           False |              True |          False |              True |             False |          False |           True |       False | -58.137443  |
+|  37 |            0 | False |  True |              False |               True |              False |             False |           False |             False |           True |              True |             False |          False |          False |        True |  43.902772  |
+|  48 |            1 |  True | False |               True |              False |              False |             False |           False |              True |          False |             False |              True |          False |           True |       False | -24.820727  |
+|  54 |            0 | False |  True |              False |              False |               True |             False |           False |              True |          False |              True |             False |          False |          False |        True | -43.449184  |
+
+
 
 # Modeling
 **K-Nearest Neighbors (KNN)**
