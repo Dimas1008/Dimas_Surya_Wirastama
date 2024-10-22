@@ -308,9 +308,111 @@ Inilah data yang akan gunakan untuk membuat sistem rekomendasi.
 ## Data Preparation
 Pada bagian ini Anda menerapkan dan menyebutkan teknik data preparation yang dilakukan. Teknik yang digunakan pada notebook dan laporan harus berurutan.
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan proses data preparation yang dilakukan
-- Menjelaskan alasan mengapa diperlukan tahapan data preparation tersebut.
+### Mengatasi Missing Value
+Pertama lakukan pengecekan missing value pada dataframe all_wisata menggunakan perintah kode berikut:
+
+```sh
+   all_wisata.isnull().sum()
+```
+
+**output:**
+
+![image](https://github.com/user-attachments/assets/c10a69ad-dc45-4b36-969f-46d5aa80ebcd)
+
+Hasil kode diatas digunakan untuk mengidentifikasi dan menghitung jumlah missing values di dalam DataFrame all_wisata, yang penting untuk memastikan kualitas data sebelum analisis lebih lanjut.
+Tetapi dari hasil diatas tidak ada data yang missing value jadi data tidak perlu dibersihkan untuk masalah Missing Value
+
+### Menyamakan Jenis Wisata
+
+Langkah ini digunakan untuk mengurutkan wisata berdasarkan PlaceID kemudian memasukkannya ke dalam variabel fix_wisata, lakukan dengan perintah berikut:
+
+```sh
+   fix_wisata = all_wisata_clean.sort_values('Place_Id', ascending=True)
+   fix_wisata
+```
+
+**output:**
+
+![image](https://github.com/user-attachments/assets/3bfbc9c6-d828-4543-8b64-f58bddcf44d8)
+
+Pada hasil gambar diatas menunjukkan data penilaian wisata oleh pengguna, yang diurutkan berdasarkan Place_Id. Data ini memberikan informasi tentang tempat wisata yang dinilai di berbagai kota, seperti Jakarta dan Surabaya, serta nilai yang diberikan oleh pengguna terhadap tempat tersebut. Ada 10.000 baris data yang diolah dalam tabel ini.
+
+Selanjutnya lakukan pengecekan berapa jumlah fix_wisata
+```sh
+   len(fix_wisata.Place_Id.unique())
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/d13f63a4-927f-4e22-b57f-8b1181ccee58)
+
+kode diatas digunakan untuk mengetahui jumlah total tempat wisata unik dalam dataset fix_wisata terdapat 437 data yang unik. Dengan menggunakan fungsi ini, kita bisa mendapatkan informasi mengenai berapa banyak lokasi wisata yang berbeda (berdasarkan Place_Id) di dalam data.
+
+Selanjutnya, mari kita cek City (kategori wisata) yang unik dengan kode berikut.
+```sh
+   # Mengecek kategori wisata yang unik
+   fix_wisata.City.unique()
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/ccbb2284-3bdf-4835-b069-f0bec9a2ce13)
+
+Dari output kode diatas terdapat 5 yang memiliki kategori unik
+
+Selanjutnya membuat variabel preparation yang berisi dataframe fix_wisata kemudian mengurutkan berdasarkan placeID, menggunakan kode berikut:
+```sh
+preparation = fix_wisata
+preparation.sort_values('Place_Id')
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/de240e6f-4bd2-4703-826c-26e39527a8a9)
+
+Kode diatas digunakan untuk membuat salinan dari DataFrame fix_wisata ke dalam variabel preparation dan mengurutkannya berdasarkan kolom Place_Id.
+
+Selanjutnya membuang data duplikat pada variabel preparation yang telah dibuat tadi, menggunakan kode berikut:
+```sh
+preparation = preparation.drop_duplicates('Place_Id')
+preparation
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/81642886-70c5-43d5-94ea-e1ef79e36475)
+
+Kode ini efektif untuk menghapus baris duplikat dari DataFrame preparation berdasarkan kolom Place_Id, memastikan bahwa setiap tempat hanya muncul sekali dalam DataFrame.
+data yang awalnya 10000 sekarang menjadi 437 setelah data yang sama dihapus.
+
+Selanjutnya mengonversi data series ‘Place_Id’, 'City’ dan ‘Place_Name’ menjadi dalam bentuk list
+```sh
+   wisata_id = preparation['Place_Id'].tolist()
+   wisata_name = preparation['Place_Name'].tolist()
+   city_name = preparation['City'].tolist()
+   
+   print(len(wisata_id))
+   print(len(wisata_name))
+   print(len(city_name))
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/13505920-7da9-445b-8c72-cbd66da9833a)
+
+Kode ini mengonversi kolom Place_Id, Place_Name, dan City dari DataFrame preparation menjadi list dan mencetak jumlah elemen dalam masing-masing list. Ini berguna untuk memudahkan manipulasi data lebih lanjut dalam bentuk list.
+
+Tahap berikutnya, kita akan membuat dictionary untuk menentukan pasangan key-value pada data wisata_id, wisata_name, dan city_name yang telah disiapkan sebelumnya.
+
+```sh
+# Membuat dictionary untuk data ‘wisata_id’, ‘wisata_name’, dan ‘city_name’
+wisata_new = pd.DataFrame({
+    'id': wisata_id,
+    'wisata_name': wisata_name,
+    'kota': city_name
+})
+wisata_new
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/088595a8-fb08-4772-ba7c-5eb6ae0d450c)
+
+Kode ini membuat sebuah DataFrame baru yang berisi tiga kolom: list wisata_id, wisata_name, dan city_name yang telah dibuat sebelumnya. DataFrame ini menyatukan informasi dari tiga variabel terpisah (ID, nama wisata, dan kota) menjadi satu struktur data yang lebih mudah diolah atau dianalisis.
 
 ## Modeling
 Tahapan ini membahas mengenai model sisten rekomendasi yang Anda buat untuk menyelesaikan permasalahan. Sajikan top-N recommendation sebagai output.
