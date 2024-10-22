@@ -400,13 +400,13 @@ Kode ini mengonversi kolom Place_Id, Place_Name, dan City dari DataFrame prepara
 Tahap berikutnya, kita akan membuat dictionary untuk menentukan pasangan key-value pada data wisata_id, wisata_name, dan city_name yang telah disiapkan sebelumnya.
 
 ```sh
-# Membuat dictionary untuk data ‘wisata_id’, ‘wisata_name’, dan ‘city_name’
-wisata_new = pd.DataFrame({
-    'id': wisata_id,
-    'wisata_name': wisata_name,
-    'kota': city_name
-})
-wisata_new
+   # Membuat dictionary untuk data ‘wisata_id’, ‘wisata_name’, dan ‘city_name’
+   wisata_new = pd.DataFrame({
+       'id': wisata_id,
+       'wisata_name': wisata_name,
+       'kota': city_name
+   })
+   wisata_new
 ```
 
 **output:**
@@ -416,6 +416,193 @@ Kode ini membuat sebuah DataFrame baru yang berisi tiga kolom: list wisata_id, w
 
 ## Modeling
 Tahapan ini membahas mengenai model sisten rekomendasi yang Anda buat untuk menyelesaikan permasalahan. Sajikan top-N recommendation sebagai output.
+
+### Model Development dengan Content Based Filtering
+Membuat dataframe bernama data yang berisi wisata_new
+```sh
+   data = wisata_new
+   data.sample(5)
+```
+
+**output:**
+
+![image](https://github.com/user-attachments/assets/9e428509-0115-4b69-8040-21b4945c48f0)
+
+Kode diatas ini menampilkan 5 baris data secara acak dari DataFrame wisata_new, yang membantu dalam memeriksa distribusi atau melihat representasi acak dari data yang ada tanpa harus melihat seluruh DataFrame.
+
+### TF-IDF Vectorizer
+```sh
+   from sklearn.feature_extraction.text import TfidfVectorizer
+   
+   # Inisialisasi TfidfVectorizer
+   tf = TfidfVectorizer()
+   
+   # Melakukan perhitungan idf pada data cuisine
+   tf.fit(data['kota'])
+   
+   # Mapping array dari fitur index integer ke fitur nama
+   tf.get_feature_names_out()
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/2958b60f-fd07-4a33-818b-e9fa16ed40fa)
+
+Kode diatas ini melakukan perhitungan TF-IDF pada kolom 'kota' dari DataFrame data dan mengambil nama fitur yang dihasilkan. Ini berguna untuk melakukan analisis teks dan menghasilkan fitur yang lebih bermakna.
+
+Kemudian lakukan fit dan transformasi ke dalam bentuk matriks.
+```sh
+   # Melakukan fit lalu ditransformasikan ke bentuk matrix
+   tfidf_matrix = tf.fit_transform(data['kota'])
+   
+   # Melihat ukuran matrix tfidf
+   tfidf_matrix.shape
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/66d8d356-abb1-47f6-bb18-d8ebed2a362c)
+
+Perhatikanlah, matriks yang kita miliki berukuran (437, 5). Nilai 437 merupakan ukuran data dan 5 merupakan matrik kategori wisata.
+
+Untuk menghasilkan vektor tf-idf dalam bentuk matriks, kita menggunakan fungsi todense(). Jalankan kode berikut.
+```sh
+   # Mengubah vektor tf-idf dalam bentuk matriks dengan fungsi todense()
+   tfidf_matrix.todense()
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/07366c31-8a75-41f9-98bd-2e22275e022b)
+
+Kode tersebut mengubah representasi sparse matrix dari vektor TF-IDF menjadi dense matrix, yang lebih mudah dibaca dan dipahami. Matriks ini menunjukkan hubungan antara kata-kata dalam dokumen dengan nilai-nilai yang berbeda untuk setiap kata. Nilai 1 menunjukkan bahwa kata tersebut muncul dalam dokumen dan memiliki bobot tertentu dalam perhitungan TF-IDF, sementara nilai 0 menunjukkan tidak ada kemunculan kata tersebut dalam dokumen.
+
+Selanjutnya, mari kita lihat matriks tf-idf untuk beberapa wisata (wisata_name) dan kategori kota (City). Terapkan kode berikut.
+```sh
+   # Membuat dataframe untuk melihat tf-idf matrix
+   # Kolom diisi dengan jenis wisata
+   # Baris diisi dengan nama kota
+   
+   pd.DataFrame(
+       tfidf_matrix.todense(),
+       columns=tf.get_feature_names_out(),
+       index=data.wisata_name
+   ).sample(5, axis=1).sample(10, axis=0)
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/280e9451-7c51-4c5f-9574-d300094d9825)
+
+Output Matriks TF-IDF yang  ditampilkan menunjukkan hubungan antara nama tempat wisata dan kota-kota di Indonesia. Setiap baris dalam matriks mewakili tempat wisata, sedangkan setiap kolom mewakili kota. Nilai dalam matriks menunjukkan apakah tempat wisata tersebut terkait dengan kota tertentu (1.0) atau tidak (0.0).
+
+#### Cosine Similarity
+
+menghitung derajat kesamaan (similarity degree) antar wisata dengan teknik cosine similarity. Dengan menggunakan fungsi cosine_similarity dari library sklearn.
+```sh
+   from sklearn.metrics.pairwise import cosine_similarity
+   
+   # Menghitung cosine similarity pada matrix tf-idf
+   cosine_sim = cosine_similarity(tfidf_matrix)
+   cosine_sim
+```
+
+**output:**
+
+![image](https://github.com/user-attachments/assets/01122471-43f6-4fd0-bd1d-f09c8d685860)
+
+Hasil dari kode ini adalah matriks kesamaan kosinus. Matriks ini menunjukkan kesamaan antara setiap dokumen dalam matriks tf-idf. Nilai 1 menunjukkan bahwa dua dokumen tersebut sangat mirip, sedangkan nilai 0 menunjukkan bahwa dua dokumen tersebut tidak mirip sama sekali.
+```sh
+   # Membuat dataframe dari variabel cosine_sim dengan baris dan kolom berupa nama wisata
+   cosine_sim_df = pd.DataFrame(cosine_sim, index=data['wisata_name'], columns=data['wisata_name'])
+   print('Shape:', cosine_sim_df.shape)
+   
+   # Melihat similarity matrix pada setiap wisata
+   cosine_sim_df.sample(5, axis=1).sample(10, axis=0)
+```
+
+**output:**
+
+![image](https://github.com/user-attachments/assets/1ff3a175-d632-4785-b5bc-00408e902f24)
+
+Berdasarkan gambar yang ditampilkan, terlihat bahwa similarity matrix menggunakan Cosine Similarity dari sebuah dataset wisata.
+
+Cosine Similarity Matrix telah membuat sebuah matriks kesamaan (similarity matrix) dari data wisata yang menunjukkan kesamaan antara berbagai tempat wisata. Setiap baris dan kolom merepresentasikan tempat wisata yang berbeda, dan nilai dalam matriks menunjukkan tingkat kesamaan antara dua tempat wisata. Nilai "1.0" menunjukkan kesamaan penuh antara tempat wisata yang sama (misalnya, Rumah Batik dengan Rumah Batik). Nilai "0.0" menandakan bahwa tidak ada kesamaan antara tempat wisata tersebut (misalnya, Rumah Batik dengan Patung Buddha Empat Rupa).
+Nilai kesamaan yang lebih tinggi (mendekati 1) menunjukkan bahwa dua tempat wisata memiliki kemiripan yang lebih tinggi, sedangkan nilai yang lebih rendah (mendekati 0) menunjukkan bahwa dua tempat wisata tersebut tidak terlalu mirip.
+
+#### Mendapatkan Rekomendasi
+Sebelumnya, kita telah memiliki data similarity (kesamaan) antar wisata. Kini, tibalah saatnya  menghasilkan sejumlah wisata yang akan direkomendasikan kepada pengguna. Untuk lebih memahami bagaimana cara kerjanya, lihatlah kembali matriks similarity pada tahap sebelumnya. Sebagai gambaran, mari kita ambil satu contoh berikut.
+
+Pengguna X pernah memesan wisata dari kota bandung. Kemudian, saat pengguna tersebut berencana untuk mengunjungi wisata lain, sistem akan merekomendasikan Pantai marina atau Masjid Istiqlal. Nah, rekomendasi kedua wisata ini berdasarkan kesamaan yang dihitung dengan cosine similarity pada tahap sebelumnya.
+
+Di sini, kita membuat fungsi wisata_recommendations dengan beberapa parameter sebagai berikut:
+
+* Nama_wisata : Nama wisata (index kemiripan dataframe).
+* Similarity_data : Dataframe mengenai similarity yang telah kita definisikan sebelumnya.
+* Items : Nama dan fitur yang digunakan untuk mendefinisikan kemiripan, dalam hal ini adalah ‘wisata_name’ dan ‘City’.
+* k : Banyak rekomendasi yang ingin diberikan.
+
+```sh
+   def wisata_recommendations(name_wisata, similarity_data=cosine_sim_df, items=data[['wisata_name', 'kota']], k=5):
+       """
+       Rekomendasi wisata berdasarkan kemiripan dataframe
+   
+       Parameter:
+       ---
+       name_wisata : tipe data string (str)
+                   Nama Wisata (index kemiripan dataframe)
+       similarity_data : tipe data pd.DataFrame (object)
+                         Kesamaan dataframe, simetrik, dengan wisata sebagai
+                         indeks dan kolom
+       items : tipe data pd.DataFrame (object)
+               Mengandung kedua nama dan fitur lainnya yang digunakan untuk mendefinisikan kemiripan
+       k : tipe data integer (int)
+           Banyaknya jumlah rekomendasi yang diberikan
+       ---
+   
+   
+       Pada index ini, kita mengambil k dengan nilai similarity terbesar
+       pada index matrix yang diberikan (i).
+       """
+   
+   
+       # Mengambil data dengan menggunakan argpartition untuk melakukan partisi secara tidak langsung sepanjang sumbu yang diberikan
+       # Dataframe diubah menjadi numpy
+       # Range(start, stop, step)
+       index = similarity_data.loc[:,name_wisata].to_numpy().argpartition(
+           range(-1, -k, -1))
+   
+       # Mengambil data dengan similarity terbesar dari index yang ada
+       closest = similarity_data.columns[index[-1:-(k+2):-1]]
+   
+       # Drop nama_wisata agar nama wisata yang dicari tidak muncul dalam daftar rekomendasi
+       closest = closest.drop(name_wisata, errors='ignore')
+   
+       return pd.DataFrame(closest).merge(items).head(k)
+```
+
+Perhatikanlah, dengan menggunakan argpartition, kita mengambil sejumlah nilai k tertinggi dari similarity data (dalam kasus ini: dataframe cosine_sim_df). Kemudian, kita mengambil data dari bobot (tingkat kesamaan) tertinggi ke terendah. Data ini dimasukkan ke dalam variabel closest. Berikutnya, kita perlu menghapus nama_wisata yang yang dicari agar tidak muncul dalam daftar rekomendasi. Dalam kasus ini, nanti kita akan mencari wisata yang mirip dengan Jendela Alam, sehingga kita perlu drop nama_wisata Jendela Alam agar tidak muncul dalam daftar rekomendasi yang diberikan nanti.  
+
+Selanjutnya, mari kita terapkan kode di atas untuk menemukan rekomendasi wisata yang mirip dengan Jendela Alam. Terapkan kode berikut:
+```sh
+   data[data.wisata_name.eq('Jendela Alam')]
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/d37745c2-777d-4ad0-9c0f-d35c93552373)
+
+Kode diatas tampaknya menganalisis kesamaan antara berbagai objek wisata menggunakan teknik yang disebut cosine similarity. Matriks kesamaan yang dihasilkan dapat digunakan untuk tugas seperti merekomendasikan objek wisata yang serupa atau mengelompokkan objek wisata yang serupa berdasarkan karakteristiknya.
+
+Selanjutnya kita coba untuk mendapatkan rekomendasi wisata yang mirip dengan Jendela Alam, menggunakan kode berikut:
+```sh
+   wisata_recommendations('Jendela Alam')
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/be9f570a-424f-444f-a64a-906f91e82018)
+
+Sistem dengan model development Content Based Filtering telah berhasil memberikan merekomendasikan 5 nama wisata dengan kategori 'kota' Bandung
+
+### Model Development dengan Collaborative Filtering
+
+
+
 
 **Rubrik/Kriteria Tambahan (Opsional)**: 
 - Menyajikan dua solusi rekomendasi dengan algoritma yang berbeda.
