@@ -71,10 +71,6 @@ Dataset ini terdiri dari beberapa file CSV, dengan total lebih dari 400 destinas
     * Place_Tourism4: Tujuan wisata keempat
     * Place_Tourism5: Tujuan wisata kelima
 
-**Rubrik/Kriteria Tambahan (Opsional)**:
-- Melakukan beberapa tahapan yang diperlukan untuk memahami data, contohnya teknik visualisasi data beserta insight atau exploratory data analysis.
-
-
 ### Read data
 
 menggunakan perintah berikut:
@@ -193,6 +189,121 @@ Variabel-variabel pada Wisata di Indonesia dataset adalah sebagai berikut:
 ![image](https://github.com/user-attachments/assets/d92c59f6-aad2-46fe-9f62-2222ef131a47)
 
 Kode diatas digunakan Untuk melihat berapa pengunjung yang memberikan rating berdasarkan User_Id dan Place_Id pada rating
+
+### Data Preprocessing
+#### Menggabungkan Data Wisata
+
+Pada langkah ini dilakukan penggabungkan seluruh placeID pada kategori Wisata menggunakan kode berikut:
+```sh
+   resto_all = np.concatenate((
+       id_tourist.Place_Id.unique(),
+       rating.Place_Id.unique(),
+   ))
+```
+
+**output**
+
+![image](https://github.com/user-attachments/assets/46cee9ee-3af7-42b2-a2eb-181ce7abf29c)
+
+Kode ini menghasilkan daftar unik Place_Id dari dua sumber data, memastikan tidak ada duplikasi, dan memberikan total jumlah Place_Id yang tersedia. Ini berguna untuk analisis lebih lanjut tentang restoran berdasarkan kategori wisata.
+
+#### Menggabungkan Seluruh Data User
+
+Pada langkah ini dilakukan penggabungan data dan penghapusan data yang sama pada seluruh User_Id pada ketegori wisata menggunakan kode berikut:
+```sh
+   # Menggabungkan seluruh userID
+   user_all = np.concatenate((
+       rating.User_Id.unique(),
+       user.User_Id.unique(),
+   ))
+   
+   # Menghapus data yang sama kemudian mengurutkannya
+   user_all = np.sort(np.unique(user_all))
+   
+   print('Jumlah seluruh user: ', len(user_all))
+```
+
+**output**
+
+![image](https://github.com/user-attachments/assets/25195e30-13de-4862-ba0f-451715201c65)
+
+Kode ini menghasilkan daftar unik User _Id dari dua sumber data, memastikan tidak ada duplikasi, dan memberikan total jumlah User _Id yang tersedia. Ini berguna untuk analisis lebih lanjut tentang pengguna dalam konteks data yang Anda miliki.
+
+#### Mengetahui Jumlah Rating
+
+Pada langkah ini digunakan untuk mengetahui jumlah seluruh rating dari berbagai file dengan cara menggabungkan file id_tourist dan rating ke dalam dataframe resto_info setelah itu menggabungkan dataframe rating dengan rating_info berdasarkan nilai Place_Id , dengan implementasikan kode berikut.
+
+```sh
+   # Menggabungkan file id_tourist dan rating ke dalam dataframe resto_info
+   rating_info = pd.concat([id_tourist, rating])
+   
+   # Menggabungkan dataframe rating dengan rating_info berdasarkan nilai Place_Id
+   wisata = pd.merge(rating, rating_info , on='Place_Id', how='left')
+   wisata
+```
+**output:**
+
+![image](https://github.com/user-attachments/assets/000cb1b0-63ce-4088-9e62-b7647792d597)
+
+Kode ini menggabungkan data dari dua sumber (id_tourist dan rating) ke dalam satu DataFrame rating_info, kemudian menggabungkan informasi lebih lanjut dari rating_info ke dalam DataFrame wisata berdasarkan Place_Id. Pada Data terdapat banyak missing value
+
+#### Mencari Missing Value
+
+Pada langkah ini melakukab cek missing value dengan fungsi isnull()
+
+```sh
+wisata.isnull().sum()
+```
+
+**output:**
+
+![image](https://github.com/user-attachments/assets/f491f789-8b8f-4840-873c-ff6e98e4a901)
+
+Kode diatas digunakan untuk melakukan pengecekean missing value pada sluruh data wisata.
+Terdapat banyak missing value pada sebagian besar fitur. Hanya fitur User_Id_x, Place_Id, Place_Ratings_x saja yang memiliki 0 missing value.
+
+#### Menggabungkan Data dengan Fitur Nama Wisata 
+
+1. Pertama mendefinisikan datfraem rating ke dalam variabel all_wisata_rate menggunakan kode berikut:
+```sh
+   all_wisata_rate = rating
+   all_wisata_rate
+```
+
+**output:**
+
+![image](https://github.com/user-attachments/assets/fb9ca37e-2ca0-435a-b65b-aa637470ed73)
+
+Hasil Kode diatas membuat salinan dari DataFrame rating dan menyimpannya dalam variabel all_wisata_rate. Ini berguna jika Anda ingin bekerja dengan salinan data penilaian tanpa mengubah data asli di rating.
+
+2. Kedua menggabungkan dataframe all_wisata_rate dengan dataframe Place_Name berdasarkan placeID
+```sh
+   all_wisata_name = pd.merge(all_wisata_rate, id_tourist[['Place_Id','Place_Name']], on='Place_Id', how='left')
+   
+   # Print dataframe all_wisata_name
+   all_wisata_name
+```
+
+**output:**
+
+![image](https://github.com/user-attachments/assets/d787d67d-6cb5-4bdb-9e5c-f01b53379b0d)
+
+Hasil Kode diatas digunakan untuk menggabungkan informasi dari DataFrame all_wisata_rate dengan nama tempat dari DataFrame id_tourist, menghasilkan DataFrame baru all_wisata_name yang berisi informasi lengkap tentang penilaian dan nama tempat wisata. Ini berguna untuk analisis yang lebih mendalam mengenai wisata dan untuk memberikan konteks pada data penilaian yang ada.
+
+#### Menggabungkan Data dengan Fitur city
+
+Pada langkah ini menggabungkan dataframe id_tourist pada kolom city dengan all_wisata_name dan memasukkannya ke dalam variabel all_wisata
+```sh
+   all_wisata = pd.merge(all_wisata_name, id_tourist[['Place_Id','City']], on='Place_Id', how='left')
+   all_wisata
+```
+
+**output:**
+
+![image](https://github.com/user-attachments/assets/dc7baf97-8aef-4e5d-8cd4-9f08945954b8)
+
+Kode ini menggabungkan informasi dari DataFrame all_wisata_name dengan informasi kota dari DataFrame id_tourist, menghasilkan DataFrame baru all_wisata yang berisi informasi lengkap tentang penilaian, nama tempat, dan kota tempat wisata. Ini berguna untuk analisis yang lebih mendalam mengenai wisata dan untuk memberikan konteks pada data penilaian yang ada.
+Inilah data yang akan gunakan untuk membuat sistem rekomendasi.
 
 ## Data Preparation
 Pada bagian ini Anda menerapkan dan menyebutkan teknik data preparation yang dilakukan. Teknik yang digunakan pada notebook dan laporan harus berurutan.
