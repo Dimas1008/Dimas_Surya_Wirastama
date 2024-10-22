@@ -343,6 +343,7 @@ Selanjutnya lakukan pengecekan berapa jumlah fix_wisata
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/d13f63a4-927f-4e22-b57f-8b1181ccee58)
 
 kode diatas digunakan untuk mengetahui jumlah total tempat wisata unik dalam dataset fix_wisata terdapat 437 data yang unik. Dengan menggunakan fungsi ini, kita bisa mendapatkan informasi mengenai berapa banyak lokasi wisata yang berbeda (berdasarkan Place_Id) di dalam data.
@@ -354,6 +355,7 @@ Selanjutnya, mari kita cek City (kategori wisata) yang unik dengan kode berikut.
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/ccbb2284-3bdf-4835-b069-f0bec9a2ce13)
 
 Dari output kode diatas terdapat 5 yang memiliki kategori unik
@@ -365,6 +367,7 @@ preparation.sort_values('Place_Id')
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/de240e6f-4bd2-4703-826c-26e39527a8a9)
 
 Kode diatas digunakan untuk membuat salinan dari DataFrame fix_wisata ke dalam variabel preparation dan mengurutkannya berdasarkan kolom Place_Id.
@@ -393,6 +396,7 @@ Selanjutnya mengonversi data series ‘Place_Id’, 'City’ dan ‘Place_Name�
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/13505920-7da9-445b-8c72-cbd66da9833a)
 
 Kode ini mengonversi kolom Place_Id, Place_Name, dan City dari DataFrame preparation menjadi list dan mencetak jumlah elemen dalam masing-masing list. Ini berguna untuk memudahkan manipulasi data lebih lanjut dalam bentuk list.
@@ -410,6 +414,7 @@ Tahap berikutnya, kita akan membuat dictionary untuk menentukan pasangan key-val
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/088595a8-fb08-4772-ba7c-5eb6ae0d450c)
 
 Kode ini membuat sebuah DataFrame baru yang berisi tiga kolom: list wisata_id, wisata_name, dan city_name yang telah dibuat sebelumnya. DataFrame ini menyatukan informasi dari tiga variabel terpisah (ID, nama wisata, dan kota) menjadi satu struktur data yang lebih mudah diolah atau dianalisis.
@@ -445,6 +450,7 @@ Kode diatas ini menampilkan 5 baris data secara acak dari DataFrame wisata_new, 
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/2958b60f-fd07-4a33-818b-e9fa16ed40fa)
 
 Kode diatas ini melakukan perhitungan TF-IDF pada kolom 'kota' dari DataFrame data dan mengambil nama fitur yang dihasilkan. Ini berguna untuk melakukan analisis teks dan menghasilkan fitur yang lebih bermakna.
@@ -459,6 +465,7 @@ Kemudian lakukan fit dan transformasi ke dalam bentuk matriks.
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/66d8d356-abb1-47f6-bb18-d8ebed2a362c)
 
 Perhatikanlah, matriks yang kita miliki berukuran (437, 5). Nilai 437 merupakan ukuran data dan 5 merupakan matrik kategori wisata.
@@ -470,6 +477,7 @@ Untuk menghasilkan vektor tf-idf dalam bentuk matriks, kita menggunakan fungsi t
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/07366c31-8a75-41f9-98bd-2e22275e022b)
 
 Kode tersebut mengubah representasi sparse matrix dari vektor TF-IDF menjadi dense matrix, yang lebih mudah dibaca dan dipahami. Matriks ini menunjukkan hubungan antara kata-kata dalam dokumen dengan nilai-nilai yang berbeda untuk setiap kata. Nilai 1 menunjukkan bahwa kata tersebut muncul dalam dokumen dan memiliki bobot tertentu dalam perhitungan TF-IDF, sementara nilai 0 menunjukkan tidak ada kemunculan kata tersebut dalam dokumen.
@@ -488,6 +496,7 @@ Selanjutnya, mari kita lihat matriks tf-idf untuk beberapa wisata (wisata_name) 
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/280e9451-7c51-4c5f-9574-d300094d9825)
 
 Output Matriks TF-IDF yang  ditampilkan menunjukkan hubungan antara nama tempat wisata dan kota-kota di Indonesia. Setiap baris dalam matriks mewakili tempat wisata, sedangkan setiap kolom mewakili kota. Nilai dalam matriks menunjukkan apakah tempat wisata tersebut terkait dengan kota tertentu (1.0) atau tidak (0.0).
@@ -585,6 +594,7 @@ Selanjutnya, mari kita terapkan kode di atas untuk menemukan rekomendasi wisata 
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/d37745c2-777d-4ad0-9c0f-d35c93552373)
 
 Kode diatas tampaknya menganalisis kesamaan antara berbagai objek wisata menggunakan teknik yang disebut cosine similarity. Matriks kesamaan yang dihasilkan dapat digunakan untuk tugas seperti merekomendasikan objek wisata yang serupa atau mengelompokkan objek wisata yang serupa berdasarkan karakteristiknya.
@@ -595,6 +605,7 @@ Selanjutnya kita coba untuk mendapatkan rekomendasi wisata yang mirip dengan Jen
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/be9f570a-424f-444f-a64a-906f91e82018)
 
 Sistem dengan model development Content Based Filtering telah berhasil memberikan merekomendasikan 5 nama wisata dengan kategori 'kota' Bandung
@@ -612,6 +623,7 @@ df
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/9a004f12-4d0f-4ca1-92a4-3a081720cb13)
 
 Kode diatat digunakan untuk menyalin data rating yang dimasukkan ke df kemudian ditampilkan dengan memanggil df
@@ -636,6 +648,7 @@ Pada tahap ini, Anda perlu melakukan persiapan data untuk menyandikan (encode) f
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/70862bba-db54-4ce4-a0f5-3ec551fbe521)
 
 Kode ini mengubah kolom User _Id menjadi daftar unik, melakukan encoding dari User _Id ke angka, dan sebaliknya.
@@ -660,6 +673,7 @@ Selanjutnya, lakukan hal yang sama pada fitur ‘placeID’.
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/f17a09e0-514d-4190-bee5-8ea6c286dd1b)
 
 Proses ini sama seperti pada User_Id untuk kolom Place_Id. Setiap Place_Id di-encode ke dalam bentuk indeks integer yang lebih mudah diproses oleh algoritma.
@@ -702,6 +716,7 @@ Terakhir, cek beberapa hal dalam data seperti jumlah user, jumlah wisata, dan me
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/045b2ec8-92f5-4f26-b2e6-6e5f9564f146)
 
 Kode diatas menghitung jumlah pengguna (300), jumlah tempat wisata (437), serta mengonversi data rating tempat wisata menjadi tipe data float. Selain itu, kode juga menghitung dan menampilkan nilai rating minimum (1.0) dan maksimum (5.0).
@@ -724,6 +739,7 @@ Tahap persiapan ini penting dilakukan agar data siap digunakan untuk pemodelan. 
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/f7e5d66e-a95c-4739-b296-a3618d5ce01a)
 
 kode ini mengacak urutan baris dalam DataFrame df, yang berguna untuk menghilangkan bias dalam analisis atau pelatihan model.
@@ -750,6 +766,7 @@ Selanjutnya, kita bagi data train dan validasi dengan komposisi 80:20. Namun seb
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/f9fe2fb1-1541-44a8-ae8b-3c20959c7cbc)
 
 Kode diatas ini mempersiapkan data untuk model pembelajaran mesin dengan mencocokkan pengguna dan tempat, menormalkan rating, dan membagi dataset menjadi data pelatihan dan validasi.
@@ -833,6 +850,7 @@ Langkah berikutnya, mulailah proses training.
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/55ce5da1-052e-4131-8fe3-3b823f01b8a4)
 
 Analisis Hasil
@@ -897,6 +915,7 @@ Untuk melihat visualisasi proses training, mari kita plot metrik evaluasi dengan
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/1b5b36cf-f001-42c2-9aaf-bec25ad393a8)
 
 Proses training model yang ditampilkan cukup smooth dan model berhasil konvergen setelah sekitar 100 epochs. Dari proses ini, kita memperoleh beberapa hasil:
@@ -975,6 +994,7 @@ Selanjutnya, untuk memperoleh rekomendasi wisata, gunakan fungsi model.predict()
 ```
 
 **output:**
+
 ![image](https://github.com/user-attachments/assets/dad45aec-edcc-4f20-b224-bf42a76bcf6a)
 
 Kode ini menghasilkan rekomendasi tempat wisata untuk pengguna berdasarkan rating yang diprediksi oleh model. Rekomendasi ini didasarkan pada tempat wisata yang belum dikunjungi oleh pengguna dan juga mempertimbangkan tempat wisata yang telah mereka kunjungi dengan rating tertinggi.
