@@ -601,23 +601,386 @@ Sistem dengan model development Content Based Filtering telah berhasil memberika
 
 ### Model Development dengan Collaborative Filtering
 
+Teknik ini merekomendasikan item yang mirip dengan preferensi pengguna di masa lalu. Pada tahap ini, akan menerapkan teknik collaborative filtering untuk membuat sistem rekomendasi. Teknik ini membutuhkan data rating dari user.
+
+#### Data Understanding
+
+Pertama kita membaca dataset rating
+```sh
+df = rating
+df
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/9a004f12-4d0f-4ca1-92a4-3a081720cb13)
+
+Kode diatat digunakan untuk menyalin data rating yang dimasukkan ke df kemudian ditampilkan dengan memanggil df
+data rating memiliki 10000 baris dan 3 kolom.
+
+#### Data Preparation
+
+Pada tahap ini, Anda perlu melakukan persiapan data untuk menyandikan (encode) fitur ‘user’ dan ‘placeID’ ke dalam indeks integer.
+
+```sh
+   # Mengubah userID menjadi list tanpa nilai yang sama
+   user_ids = df['User_Id'].unique().tolist()
+   print('list User_Id: ', user_ids)
+   
+   # Melakukan encoding userID
+   user_to_user_encoded = {x: i for i, x in enumerate(user_ids)}
+   print('encoded User_Id : ', user_to_user_encoded)
+   
+   # Melakukan proses encoding angka ke ke userID
+   user_encoded_to_user = {i: x for i, x in enumerate(user_ids)}
+   print('encoded angka ke User_Id: ', user_encoded_to_user)
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/70862bba-db54-4ce4-a0f5-3ec551fbe521)
+
+Kode ini mengubah kolom User _Id menjadi daftar unik, melakukan encoding dari User _Id ke angka, dan sebaliknya.
+tahap ini melakukan encoding pada User_Id ke dalam bentuk indeks integer agar lebih efisien diproses oleh algoritma.
+ini juga dapat menyiapkan mekanisme untuk mengembalikan hasil encoded tersebut kembali ke User_Id asli.
+Dengan encoded dan decoded dictionary ini, Anda dapat dengan mudah beralih antara ID pengguna asli dan representasi integer-nya saat melakukan analisis atau pelatihan model.
+
+Selanjutnya, lakukan hal yang sama pada fitur ‘placeID’.
+
+```sh
+   # Mengubah placeID menjadi list tanpa nilai yang sama
+   wisata_ids = df['Place_Id'].unique().tolist()
+   print('list Place_Id: ', wisata_ids)
+   
+   # Melakukan proses encoding placeID
+   wisata_to_wisata_encoded = {x: i for i, x in enumerate(wisata_ids)}
+   print('encoded Place_Id : ', wisata_to_wisata_encoded)
+   
+   # Melakukan proses encoding angka ke placeID
+   wisata_encoded_to_wisata = {i: x for i, x in enumerate(wisata_ids)}
+   print('encoded angka ke Place_Id: ', wisata_encoded_to_wisata)
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/f17a09e0-514d-4190-bee5-8ea6c286dd1b)
+
+Proses ini sama seperti pada User_Id untuk kolom Place_Id. Setiap Place_Id di-encode ke dalam bentuk indeks integer yang lebih mudah diproses oleh algoritma.
+Ada mekanisme dekoding untuk mengubah kembali indeks integer menjadi ID tempat asli.
+
+Berikutnya, petakan userID dan placeID ke dataframe yang berkaitan.
+
+```sh
+   # Mapping userID ke dataframe user
+   df['user'] = df['User_Id'].map(user_to_user_encoded)
+   
+   # Mapping placeID ke dataframe wisata
+   df['wisata'] = df['Place_Id'].map(wisata_to_wisata_encoded)
+```
+
+Kode diatas ini menambahkan dua kolom baru ke DataFrame df, yaitu user dan wisata, yang berisi ID pengguna dan ID tempat yang telah terencode.
+
+Terakhir, cek beberapa hal dalam data seperti jumlah user, jumlah wisata, dan mengubah nilai rating menjadi float.
+```sh
+   # Mendapatkan jumlah user
+   num_users = len(user_to_user_encoded)
+   print(num_users)
+   
+   # Mendapatkan jumlah wisata
+   num_wisata = len(wisata_encoded_to_wisata)
+   print(num_wisata)
+   
+   # Mengubah rating menjadi nilai float
+   df['rating'] = df['Place_Ratings'].values.astype(np.float32)
+   
+   # Nilai minimum rating
+   min_rating = min(df['rating'])
+   
+   # Nilai maksimal rating
+   max_rating = max(df['rating'])
+   
+   print('Number of User: {}, Number of Wisata: {}, Min Rating: {}, Max Rating: {}'.format(
+       num_users, num_wisata, min_rating, max_rating
+   ))
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/045b2ec8-92f5-4f26-b2e6-6e5f9564f146)
+
+Kode diatas menghitung jumlah pengguna (300), jumlah tempat wisata (437), serta mengonversi data rating tempat wisata menjadi tipe data float. Selain itu, kode juga menghitung dan menampilkan nilai rating minimum (1.0) dan maksimum (5.0).
+
+Tahap persiapan telah selesai. Berikut adalah hal-hal yang telah kita lakukan pada tahap ini:
+
+* Memahami data rating yang kita miliki.
+* Menyandikan (encode) fitur ‘user’ dan ‘placeID’ ke dalam indeks integer.
+* Memetakan ‘userID’ dan ‘placeID’ ke dataframe yang berkaitan.
+* Mengecek beberapa hal dalam data seperti jumlah user, jumlah wisata, kemudian mengubah nilai rating menjadi float.
+
+Tahap persiapan ini penting dilakukan agar data siap digunakan untuk pemodelan. Namun sebelumnya, kita perlu membagi data untuk training dan validasi terlebih dahulu yang akan kita pelajari di materi berikutnya. Selanjutnya kita akan melakukan pembagian model
+
+#### Membagi Data untuk Training dan Validasi
+
+```sh
+   # Mengacak dataset
+   df = df.sample(frac=1, random_state=42)
+   df
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/f7e5d66e-a95c-4739-b296-a3618d5ce01a)
+
+kode ini mengacak urutan baris dalam DataFrame df, yang berguna untuk menghilangkan bias dalam analisis atau pelatihan model.
+
+Selanjutnya, kita bagi data train dan validasi dengan komposisi 80:20. Namun sebelumnya, kita perlu memetakan (mapping) data user dan wisata menjadi satu value terlebih dahulu. Lalu, buatlah rating dalam skala 0 sampai 1 agar mudah dalam melakukan proses training.
+
+```sh
+   # Membuat variabel x untuk mencocokkan data user dan wisata menjadi satu value
+   x = df[['user', 'wisata']].values
+   
+   # Membuat variabel y untuk membuat rating dari hasil
+   y = df['rating'].apply(lambda x: (x - min_rating) / (max_rating - min_rating)).values
+   
+   # Membagi menjadi 80% data train dan 20% data validasi
+   train_indices = int(0.8 * df.shape[0])
+   x_train, x_val, y_train, y_val = (
+       x[:train_indices],
+       x[train_indices:],
+       y[:train_indices],
+       y[train_indices:]
+   )
+   
+   print(x, y)
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/f9fe2fb1-1541-44a8-ae8b-3c20959c7cbc)
+
+Kode diatas ini mempersiapkan data untuk model pembelajaran mesin dengan mencocokkan pengguna dan tempat, menormalkan rating, dan membagi dataset menjadi data pelatihan dan validasi.
+
+#### Proses Training
+Pada tahap ini, model menghitung skor kecocokan antara pengunjung dan wisata dengan teknik embedding. Pertama, kita melakukan proses embedding terhadap data pengunjung dan wisata. Selanjutnya, lakukan operasi perkalian dot product antara embedding pengunjung dan wisata. Selain itu, kita juga dapat menambahkan bias untuk setiap pengunjung dan wisata. Skor kecocokan ditetapkan dalam skala [0,1] dengan fungsi aktivasi sigmoid.
+
+Di sini, kita membuat class RecommenderNet dengan keras Model class. Kode class RecommenderNet ini terinspirasi dari tutorial dalam situs Keras dengan beberapa adaptasi sesuai kasus yang sedang kita selesaikan. Terapkan kode berikut.
+
+```sh
+   import tensorflow as tf
+   from tensorflow import keras
+   from tensorflow.keras import layers
+   
+   class RecommenderNet(tf.keras.Model):
+   
+     # Insialisasi fungsi
+     def __init__(self, num_users, num_wisata, embedding_size, **kwargs):
+       super(RecommenderNet, self).__init__(**kwargs)
+       self.num_users = num_users
+       self.num_wisata = num_wisata
+       self.embedding_size = embedding_size
+       self.user_embedding = layers.Embedding( # layer embedding user
+           num_users,
+           embedding_size,
+           embeddings_initializer = 'he_normal',
+           embeddings_regularizer = keras.regularizers.l2(1e-6)
+       )
+       self.user_bias = layers.Embedding(num_users, 1) # layer embedding user bias
+       self.wisata_embedding = layers.Embedding( # layer wisata embeddings
+           num_wisata,
+           embedding_size,
+           embeddings_initializer = 'he_normal',
+           embeddings_regularizer = keras.regularizers.l2(1e-6)
+       )
+       self.wisata_bias = layers.Embedding(num_wisata, 1) # layer embedding wisata bias
+   
+     def call(self, inputs):
+       user_vector = self.user_embedding(inputs[:,0]) # memanggil layer embedding 1
+       user_bias = self.user_bias(inputs[:, 0]) # memanggil layer embedding 2
+       wisata_vector = self.wisata_embedding(inputs[:, 1]) # memanggil layer embedding 3
+       wisata_bias = self.wisata_bias(inputs[:, 1]) # memanggil layer embedding 4
+   
+       dot_user_wisata = tf.tensordot(user_vector, wisata_vector, 2)
+   
+       x = dot_user_wisata + user_bias + wisata_bias
+   
+       return tf.nn.sigmoid(x) # activation sigmoid
+```
+
+Model ini menggunakan embedding untuk pengguna dan tempat wisata untuk memprediksi rating dengan cara yang efisien. Dengan menggunakan produk titik dan bias, model ini dapat menangkap interaksi antara pengguna dan tempat wisata.
+
+Selanjutnya, lakukan proses compile terhadap model.
 
 
+```sh
+   model = RecommenderNet(num_users, num_wisata, 50) # inisialisasi model
+   
+   # model compile
+   model.compile(
+       loss = tf.keras.losses.BinaryCrossentropy(),
+       optimizer = keras.optimizers.Adam(learning_rate=0.001),
+       metrics=[tf.keras.metrics.RootMeanSquaredError()]
+   )f
+```
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menyajikan dua solusi rekomendasi dengan algoritma yang berbeda.
-- Menjelaskan kelebihan dan kekurangan dari solusi/pendekatan yang dipilih.
+Model ini menggunakan Binary Crossentropy untuk menghitung loss function, Adam (Adaptive Moment Estimation) sebagai optimizer, dan root mean squared error (RMSE) sebagai metrics evaluation.
+
+Langkah berikutnya, mulailah proses training.
+
+```sh
+   # Memulai training
+   
+   history = model.fit(
+       x = x_train,
+       y = y_train,
+       batch_size = 8,
+       epochs = 100,
+       validation_data = (x_val, y_val)
+   )
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/55ce5da1-052e-4131-8fe3-3b823f01b8a4)
+
+Analisis Hasil
+* Perbandingan Loss:
+   * Loss pelatihan (0.6450) lebih rendah dibandingkan dengan loss validasi (0.7193), yang menunjukkan bahwa model mungkin mengalami sedikit overfitting. Ini berarti model belajar dengan baik pada data pelatihan tetapi tidak sebaik itu pada data validasi.
+* RMSE:
+   * RMSE pelatihan (0.3087) juga lebih rendah dibandingkan dengan RMSE validasi (0.3609). Ini menunjukkan bahwa model lebih akurat dalam memprediksi rating pada data pelatihan dibandingkan dengan data validasi.
+
+### Kekurangan dan Kelebihan Model
+
+#### 1. Collaborative Filtering (CF)
+Collaborative filtering adalah pendekatan umum dalam sistem rekomendasi yang menggunakan informasi dari interaksi pengguna (misalnya, rating, klik, pembelian) untuk memberikan rekomendasi.
+
+**Pendekatan:**
+* User-Based CF: Sistem memberikan rekomendasi berdasarkan kesamaan preferensi antar pengguna. Jika pengguna A memiliki pola rating yang mirip dengan pengguna B, maka tempat wisata yang disukai oleh A akan direkomendasikan kepada B.
+* Item-Based CF: Sistem merekomendasikan tempat wisata berdasarkan kesamaan antar item. Misalnya, jika pengguna sering memberikan rating tinggi kepada dua tempat wisata yang serupa, maka tempat wisata lain yang mirip dengan kedua item tersebut akan direkomendasikan.
+
+**Kelebihan:**
+* User-Based CF sangat cocok jika dataset memiliki banyak informasi interaksi antar pengguna.
+* Item-Based CF lebih stabil saat ada data pengguna baru (cold start), karena hanya membutuhkan informasi tentang item (wisata) untuk membuat rekomendasi.
+
+**Kekurangan:**
+* Cold Start untuk User-Based CF: Sulit memberikan rekomendasi jika ada pengguna baru yang belum pernah memberikan rating.
+Memerlukan dataset yang besar agar akurat karena bergantung pada pola interaksi.
+* Top-N Recommendation Output:
+Misalnya, Anda dapat menghasilkan rekomendasi tempat wisata teratas untuk seorang pengguna dengan memanfaatkan k-nearest neighbors (KNN) atau Matrix Factorization.
+
+#### 2. Content-Based Filtering (CB)
+Content-based filtering memberikan rekomendasi berdasarkan kesamaan fitur antara item. Dalam kasus rekomendasi wisata, algoritma ini dapat mempertimbangkan atribut tempat wisata seperti kategori, kota, dan deskripsi untuk memberikan rekomendasi yang mirip dengan preferensi pengguna.
+
+**Pendekatan:**
+* Model akan mengekstraksi fitur dari tempat wisata seperti jenis wisata (alam, sejarah, religi, dll.), kota, atau kata-kata dalam deskripsi, kemudian mencocokkannya dengan preferensi pengguna yang sudah ada.
+
+**Kelebihan:**
+* Tidak terpengaruh oleh masalah cold start untuk pengguna baru, karena rekomendasi dapat diberikan berdasarkan deskripsi wisata yang pernah dikunjungi.
+* Sangat cocok untuk tempat wisata baru yang belum memiliki banyak interaksi pengguna, karena model bisa menggunakan informasi atribut untuk membuat rekomendasi.
+
+**Kekurangan:**
+* Keterbatasan pada eksplorasi, karena sistem hanya akan merekomendasikan tempat yang mirip dengan yang sudah pernah dikunjungi pengguna. Tidak ada elemen "penemuan" seperti pada Collaborative Filtering.
+* Membutuhkan data deskriptif yang lengkap dan kaya tentang tempat wisata.
+  
+**Top-N Recommendation Output:**
+Untuk menghasilkan rekomendasi teratas, algoritma ini bisa menghitung kesamaan antar fitur (menggunakan cosine similarity atau TF-IDF) dan merekomendasikan tempat wisata yang paling mirip dengan preferensi pengguna.
 
 ## Evaluation
 Pada bagian ini Anda perlu menyebutkan metrik evaluasi yang digunakan. Kemudian, jelaskan hasil proyek berdasarkan metrik evaluasi tersebut.
 
 Ingatlah, metrik evaluasi yang digunakan harus sesuai dengan konteks data, problem statement, dan solusi yang diinginkan.
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan formula metrik dan bagaimana metrik tersebut bekerja.
+### **Visualisasi Metrik**
+
+Untuk melihat visualisasi proses training, mari kita plot metrik evaluasi dengan matplotlib. Terapkan kode berikut.
+
+```sh
+   plt.plot(history.history['root_mean_squared_error'])
+   plt.plot(history.history['val_root_mean_squared_error'])
+   plt.title('model_metrics')
+   plt.ylabel('root_mean_squared_error')
+   plt.xlabel('epoch')
+   plt.legend(['train', 'test'], loc='upper left')
+   plt.show()
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/1b5b36cf-f001-42c2-9aaf-bec25ad393a8)
+
+Proses training model yang ditampilkan cukup smooth dan model berhasil konvergen setelah sekitar 100 epochs. Dari proses ini, kita memperoleh beberapa hasil:
+
+* Error akhir pada data training: sekitar 0.31.
+* Error akhir pada data validasi (testing): sekitar 0.36.
+  
+Meskipun nilai error pada data validasi sedikit lebih tinggi daripada pada data training, nilai ini masih cukup baik untuk sistem rekomendasi. Model menunjukkan kemampuan yang memadai untuk memprediksi data baru, meskipun ada indikasi overfitting yang perlu diperhatikan.
+
+### Mendapatkan Rekomendasi Wisata
+Untuk mendapatkan rekomendasi wisata, pertama kita ambil sampel user secara acak dan definisikan variabel wisata_not_visited yang merupakan daftar wisata yang belum pernah dikunjungi oleh pengguna. Anda mungkin bertanya-tanya, mengapa kita perlu menentukan daftar wisata_not_visited? Hal ini karena daftar wisata_not_visited inilah yang akan menjadi wisata yang kita rekomendasikan.
+
+Sebelumnya, pengguna telah memberi rating pada beberapa wisata yang telah mereka kunjungi. Kita menggunakan rating ini untuk membuat rekomendasi wisata yang mungkin cocok untuk pengguna. Nah, wisata yang akan direkomendasikan tentulah wisata yang belum pernah dikunjungi oleh pengguna. Oleh karena itu, kita perlu membuat variabel wisata_not_visited sebagai daftar wisata untuk direkomendasikan pada pengguna.
+
+Variabel wisata_not_visited diperoleh dengan menggunakan operator bitwise (~) pada variabel wisata_visited_by_user.
+
+```sh
+   wisata_df = wisata_new
+   df = pd.read_csv('tourism_rating.csv')
+   
+   # Mengambil sample user
+   user_id = df.User_Id.sample(1).iloc[0]
+   wisata_visited_by_user = df[df.User_Id == user_id]
+   
+   # Operator bitwise (~), bisa diketahui di sini https://docs.python.org/3/reference/expressions.html
+   wisata_not_visited = wisata_df[~wisata_df['id'].isin(wisata_visited_by_user.Place_Id.values)]['id']
+   wisata_not_visited = list(
+       set(wisata_not_visited)
+       .intersection(set(wisata_to_wisata_encoded.keys()))
+   )
+   
+   wisata_not_visited = [[wisata_to_wisata_encoded.get(x)] for x in wisata_not_visited]
+   user_encoder = user_to_user_encoded.get(user_id)
+   user_wisata_array = np.hstack(
+       ([[user_encoder]] * len(wisata_not_visited), wisata_not_visited)
+   )
+```
+
+Kode diatas ini mempersiapkan data pengguna dan tempat wisata yang belum dikunjungi oleh pengguna tersebut untuk proses rekomendasi.
+
+Selanjutnya, untuk memperoleh rekomendasi wisata, gunakan fungsi model.predict() dari library Keras dengan menerapkan kode berikut.
+
+```sh
+   ratings = model.predict(user_wisata_array).flatten()
+   
+   top_ratings_indices = ratings.argsort()[-10:][::-1]
+   recommended_wisata_ids = [
+       user_to_user_encoded.get(wisata_not_visited[x][0]) for x in top_ratings_indices
+   ]
+   
+   print('Showing recommendations for users: {}'.format(user_id))
+   print('===' * 9)
+   print('Wisata with high ratings from user')
+   print('----' * 8)
+   
+   top_wisata_user = (
+       wisata_visited_by_user.sort_values(
+           by = 'Place_Ratings',
+           ascending=False
+       )
+       .head(5)
+       .Place_Id.values
+   )
+   
+   wisata_df_rows = wisata_df[wisata_df['id'].isin(top_wisata_user)]
+   for row in wisata_df_rows.itertuples():
+       print(row.wisata_name, ':', row.kota)
+   
+   print('----' * 8)
+   print('Top 5 wisata recommendation')
+   print('----' * 8)
+   
+   recommended_wisata = wisata_df[wisata_df['id'].isin(recommended_wisata_ids)]
+   for row in recommended_wisata.itertuples():
+       print(row.wisata_name, ':', row.kota)
+```
+
+**output:**
+![image](https://github.com/user-attachments/assets/dad45aec-edcc-4f20-b224-bf42a76bcf6a)
+
+Kode ini menghasilkan rekomendasi tempat wisata untuk pengguna berdasarkan rating yang diprediksi oleh model. Rekomendasi ini didasarkan pada tempat wisata yang belum dikunjungi oleh pengguna dan juga mempertimbangkan tempat wisata yang telah mereka kunjungi dengan rating tertinggi.
+
+Sistem telah berhasil memberikan rekomendasi kepada user. Sebagai contoh, hasil di atas adalah rekomendasi untuk user dengan id 273. Dari output tersebut, kita dapat membandingkan antara wisata with high ratings from user dan Top 5 wisata recommendation untuk user.
+
+Perhatikanlah, beberapa wisata rekomendasi menyediakan kategori kota (City) yang sesuai dengan rating user.
 
 **---Ini adalah bagian akhir laporan---**
-
-_Catatan:_
-- _Anda dapat menambahkan gambar, kode, atau tabel ke dalam laporan jika diperlukan. Temukan caranya pada contoh dokumen markdown di situs editor [Dillinger](https://dillinger.io/), [Github Guides: Mastering markdown](https://guides.github.com/features/mastering-markdown/), atau sumber lain di internet. Semangat!_
-- Jika terdapat penjelasan yang harus menyertakan code snippet, tuliskan dengan sewajarnya. Tidak perlu menuliskan keseluruhan kode project, cukup bagian yang ingin dijelaskan saja.
