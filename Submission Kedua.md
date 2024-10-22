@@ -292,42 +292,30 @@ Inilah data yang akan gunakan untuk membuat sistem rekomendasi.
 
 ## Data Preparation
 
-### 1. Encode Label
-Pada tahap ini, melakukan persiapan data untuk menyandikan (encode) fitur ‘user’ dan ‘placeID’ ke dalam indeks integer.
-
-![image](https://github.com/user-attachments/assets/bf7eb644-258a-4949-b1eb-edc1a53fc169)
-
-### 2. Membagi Data untuk Training dan Validasi
-Pada tahap ini, melakukan pembagian data train dan validasi dengan komposisi 80:20. Namun sebelumnya, kita perlu memetakan (mapping) data user dan wisata menjadi satu value terlebih dahulu. Lalu, buatlah rating dalam skala 0 sampai 1 agar mudah dalam melakukan proses training.
-
-![image](https://github.com/user-attachments/assets/35d6f369-ad97-4eaa-bcb7-054713107dcb)
-
-Pada tampilan diatas mempersiapkan data untuk model pembelajaran mesin dengan mencocokkan pengguna dan tempat, menormalkan rating, dan membagi dataset menjadi data pelatihan dan validasi.
-
-### 3. Mengatasi Missing Value
+### Mengatasi Missing Value
 Mengatasi missing values dilakukan pada dataframe all_wisata. Dari hasil pengecekan, tidak ditemukan missing values, sehingga tidak perlu ada langkah tambahan untuk menangani masalah ini.
 
 ![image](https://github.com/user-attachments/assets/2963fad4-f412-4b82-a19d-719bb6eb7f53)
 
-### 3. Menyamakan Jenis Wisata
+### Menyamakan Jenis Wisata
 Data wisata diurutkan berdasarkan Place_Id, yang kemudian disimpan dalam variabel fix_wisata. Proses ini menghasilkan data yang terorganisir untuk pengolahan lebih lanjut.
 
-### 4. Pengecekan Jumlah Wisata Unik
+### Pengecekan Jumlah Wisata Unik
 Menggunakan kode untuk menghitung jumlah tempat wisata unik berdasarkan Place_Id. Hasilnya, terdapat 437 tempat wisata unik di dataset, yang berarti 437 lokasi berbeda telah tercatat.
 
-### 5. Pengelompokan Kategori Wisata yang Unik
+### Pengelompokan Kategori Wisata yang Unik
 Data dikategorikan dan diurutkan berdasarkan kategori wisata, memungkinkan pengelompokan tempat wisata yang memiliki jenis wisata serupa.
 
-### 6. Pembuatan DataFrame Baru
+### Pembuatan DataFrame Baru
 Sebuah DataFrame baru, wisata_new, dibentuk untuk menyimpan informasi berupa Place_Id, Place_Name, dan City yang diambil dari data fix_wisata. Proses ini mempermudah pengolahan data lebih lanjut.
 
-### 7. Penghapusan Data Duplikat
+### Penghapusan Data Duplikat
 Data duplikat berdasarkan Place_Id dihapus, menghasilkan 437 baris data unik dari yang awalnya berjumlah 10.000. Ini memastikan bahwa setiap tempat wisata hanya muncul sekali dalam dataset.
 
-### 8. Konversi ke dalam List
+### Konversi ke dalam List
 Kolom Place_Id, Place_Name, dan City dari DataFrame dikonversi menjadi bentuk list untuk memudahkan proses manipulasi data lebih lanjut.
 
-### 9. Pembuatan Dictionary
+### Pembuatan Dictionary
 Data yang telah diubah menjadi list tersebut kemudian digunakan untuk membentuk dictionary baru yang menghubungkan wisata_id, wisata_name, dan city_name ke dalam DataFrame wisata_new.
 
 ### TF-IDF Vectorizer
@@ -395,6 +383,18 @@ Selanjutnya, mari kita lihat matriks tf-idf untuk beberapa wisata (wisata_name) 
 ![image](https://github.com/user-attachments/assets/280e9451-7c51-4c5f-9574-d300094d9825)
 
 Output Matriks TF-IDF yang  ditampilkan menunjukkan hubungan antara nama tempat wisata dan kota-kota di Indonesia. Setiap baris dalam matriks mewakili tempat wisata, sedangkan setiap kolom mewakili kota. Nilai dalam matriks menunjukkan apakah tempat wisata tersebut terkait dengan kota tertentu (1.0) atau tidak (0.0).
+
+### Encode Label
+Pada tahap ini, melakukan persiapan data untuk menyandikan (encode) fitur ‘user’ dan ‘placeID’ ke dalam indeks integer.
+
+![image](https://github.com/user-attachments/assets/bf7eb644-258a-4949-b1eb-edc1a53fc169)
+
+### Membagi Data untuk Training dan Validasi
+Pada tahap ini, melakukan pembagian data train dan validasi dengan komposisi 80:20. Namun sebelumnya, kita perlu memetakan (mapping) data user dan wisata menjadi satu value terlebih dahulu. Lalu, buatlah rating dalam skala 0 sampai 1 agar mudah dalam melakukan proses training.
+
+![image](https://github.com/user-attachments/assets/35d6f369-ad97-4eaa-bcb7-054713107dcb)
+
+Pada tampilan diatas mempersiapkan data untuk model pembelajaran mesin dengan mencocokkan pengguna dan tempat, menormalkan rating, dan membagi dataset menjadi data pelatihan dan validasi.
 
 ## Modeling
 Tahapan ini membahas mengenai model sisten rekomendasi yang Anda buat untuk menyelesaikan permasalahan. Sajikan top-N recommendation sebagai output.
