@@ -621,7 +621,6 @@ Precision: 80%
 **Kesimpulan**
 Meskipun kedua model memiliki pendekatan yang berbeda, evaluasi menunjukkan bahwa keduanya dapat memberikan hasil yang cukup baik. Collaborative filtering berhasil menghasilkan prediksi dengan RMSE yang rendah, sementara content-based filtering memberikan rekomendasi yang relevan dengan precision yang tinggi.
 
-
 **output:**
 
 ![image](https://github.com/user-attachments/assets/1b5b36cf-f001-42c2-9aaf-bec25ad393a8)
@@ -632,5 +631,30 @@ Proses training model yang ditampilkan cukup smooth dan model berhasil konvergen
 * Error akhir pada data validasi (testing): sekitar 0.36.
   
 Meskipun nilai error pada data validasi sedikit lebih tinggi daripada pada data training, nilai ini masih cukup baik untuk sistem rekomendasi. Model menunjukkan kemampuan yang memadai untuk memprediksi data baru, meskipun ada indikasi overfitting yang perlu diperhatikan.
+
+**Dampak Terhadap Problem Statements**
+
+1. Rekomendasi Wisata Akurat dan Personal Model yang dikembangkan berhasil memberikan rekomendasi wisata yang lebih akurat dan personal kepada pengguna. Dengan menggunakan metode Content-Based Filtering dan Collaborative Filtering, sistem dapat memanfaatkan data rating dan informasi destinasi untuk menghasilkan rekomendasi yang sesuai dengan preferensi pengguna individual.
+
+2. Pemanfaatan Informasi Lokasi dan Rating Model berhasil memanfaatkan informasi lokasi (kota) dan rating wisata untuk menghasilkan rekomendasi yang relevan. Penggunaan TF-IDF dan Cosine Similarity dalam Content-Based Filtering memungkinkan sistem untuk merekomendasikan tempat wisata berdasarkan kesamaan lokasi, sementara Collaborative Filtering memanfaatkan pola rating untuk memberikan rekomendasi yang lebih personal.
+
+3. Implementasi dan Perbandingan Metode Proyek ini berhasil mengimplementasikan dan membandingkan metode Content-Based Filtering dan Collaborative Filtering. Evaluasi menunjukkan kekuatan dan kelemahan masing-masing metode, memberikan wawasan berharga untuk pengembangan sistem rekomendasi yang lebih baik di masa depan.
+
+**Pencapaian Goals**
+
+1. Pengembangan Sistem Rekomendasi Content-Based Goal ini tercapai dengan berhasilnya implementasi sistem rekomendasi menggunakan Content-Based Filtering berdasarkan informasi kota dan nama tempat wisata.
+
+2. Implementasi Collaborative Filtering Sistem rekomendasi menggunakan Collaborative Filtering berhasil diimplementasikan, memanfaatkan data rating pengguna untuk memberikan rekomendasi personal.
+
+3. Perbandingan dan Evaluasi Metode Kedua metode berhasil dibandingkan dan dievaluasi efektivitasnya dalam memberikan rekomendasi wisata yang akurat.
+
+**Dampak Solusi Statement**
+1. Content-Based Filtering
+   * Dampak Positif: Memungkinkan rekomendasi tempat wisata berdasarkan kesamaan lokasi, membantu wisatawan menemukan destinasi serupa di kota yang sama atau berdekatan.
+   * Keterbatasan: Mungkin kurang efektif dalam menemukan preferensi baru yang belum pernah dikunjungi pengguna sebelumnya.
+
+2. Collaborative Filtering
+   * Dampak Positif: Memberikan rekomendasi berdasarkan pola preferensi pengguna lain yang mirip, memungkinkan penemuan destinasi baru yang mungkin disukai.
+   * Keterbatasan: Memerlukan data rating yang cukup banyak untuk memberikan rekomendasi yang akurat.
 
 **---Ini adalah bagian akhir laporan---**
