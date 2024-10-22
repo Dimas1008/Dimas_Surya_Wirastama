@@ -399,6 +399,34 @@ Output Matriks TF-IDF yang  ditampilkan menunjukkan hubungan antara nama tempat 
 ## Modeling
 Tahapan ini membahas mengenai model sisten rekomendasi yang Anda buat untuk menyelesaikan permasalahan. Sajikan top-N recommendation sebagai output.
 
+**1. Content-Based Filtering**
+
+Pendekatan Content-Based Filtering didasarkan pada kesamaan antara fitur tempat wisata. Pada kasus ini, kita menggunakan cosine similarity untuk mengukur tingkat kemiripan antar tempat wisata berdasarkan fitur yang relevan, seperti nama wisata dan kota.
+
+**Tahapan Content-Based Filtering:**
+
+   * **Menghitung Cosine Similarity:** Cosine similarity digunakan untuk mengukur kemiripan antara tempat wisata. Semakin tinggi nilai cosine similarity, semakin mirip dua tempat wisata tersebut. Ini memungkinkan kita untuk memberikan rekomendasi wisata yang memiliki karakteristik yang serupa dengan wisata yang pernah dikunjungi oleh pengguna.
+   * **Mendapatkan Top-N Recommendations:** Setelah menghitung cosine similarity, kita dapat merekomendasikan tempat wisata yang memiliki kemiripan tertinggi dengan wisata yang telah dikunjungi oleh pengguna.
+   * Hasil Rekomendasi: Sebagai contoh, wisata yang direkomendasikan berdasarkan kesamaan dengan Jendela Alam meliputi:
+     
+| Wisata Name               | Kota   |
+|---------------------------|--------|
+| Tebing Karaton            | Bandung|
+| Roemah Seni Sarasvati     | Bandung|
+| Pasar Baru                | Bandung|
+| Curug Cilengkrang         | Bandung|
+| Taman Sejarah Bandung     | Bandung|
+
+Tabel ini menampilkan nama tempat wisata di kolom **Wisata Name** dan lokasinya (kota) di kolom **Kota**.
+
+**2. Collaborative Filtering**
+
+Pendekatan kedua adalah Collaborative Filtering. Pada pendekatan ini, rekomendasi diberikan berdasarkan interaksi pengguna dengan tempat wisata. Model RecommenderNet digunakan untuk memprediksi tempat wisata yang mungkin disukai pengguna berdasarkan pola interaksi pengguna-pengguna lain yang memiliki preferensi serupa.
+
+**Tahapan Collaborative Filtering:**
+
+   * **Membangun Model RecommenderNet:** Model RecommenderNet menggunakan embedding untuk merepresentasikan pengguna dan tempat wisata dalam ruang vektor. Model ini belajar untuk memprediksi relevansi antara pengguna dan tempat wisata yang belum dikunjungi. Kode berikut digunakan untuk membangun model RecommenderNet:
+
 ```sh
    class RecommenderNet(tf.keras.Model):
    
@@ -437,6 +465,8 @@ Tahapan ini membahas mengenai model sisten rekomendasi yang Anda buat untuk meny
 ```
 
 Class RecommenderNet ini melakukan embedding untuk pengguna dan tempat wisata, menggabungkan embedding dengan bias pengguna dan wisata, lalu mengaktifkan output dengan fungsi sigmoid untuk mendapatkan skor kecocokan. Anda bisa melanjutkan proses ini dengan mempersiapkan data dan melatih model.
+
+   * **Melatih Model:** Model dilatih menggunakan optimizer Adam dan fungsi loss BinaryCrossentropy untuk memprediksi relevansi wisata berdasarkan interaksi pengguna.
 
 
 ### Melatih Model
