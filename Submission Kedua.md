@@ -553,23 +553,30 @@ Sistem telah berhasil memberikan rekomendasi kepada user. Sebagai contoh, hasil 
 Perhatikanlah, beberapa wisata rekomendasi menyediakan kategori kota (City) yang sesuai dengan rating user.
 
 ## Evaluation
-Pada bagian ini Anda perlu menyebutkan metrik evaluasi yang digunakan. Kemudian, jelaskan hasil proyek berdasarkan metrik evaluasi tersebut.
+**Metrik Evaluasi yang Digunakan**
+Pada tahap ini, evaluasi dilakukan untuk mengukur kinerja model rekomendasi yang telah dibuat. Dua pendekatan yang digunakan, yaitu Collaborative Filtering dan Content-Based Filtering, dievaluasi menggunakan metrik yang sesuai. Berikut adalah metrik yang digunakan untuk masing-masing pendekatan:
 
-Ingatlah, metrik evaluasi yang digunakan harus sesuai dengan konteks data, problem statement, dan solusi yang diinginkan.
+* Collaborative Filtering: Root Mean Squared Error (RMSE) RMSE digunakan untuk mengukur kesalahan prediksi antara nilai yang diharapkan dan nilai yang diprediksi oleh model. Semakin kecil nilai RMSE, semakin baik performa model dalam memprediksi rekomendasi.
 
-### **Visualisasi Metrik**
+* Content-Based Filtering: Precision Precision adalah proporsi rekomendasi yang relevan di antara seluruh rekomendasi yang diberikan. Precision yang tinggi menunjukkan bahwa model memberikan rekomendasi yang relevan sesuai dengan preferensi pengguna.
 
-Untuk melihat visualisasi proses training, mari kita plot metrik evaluasi dengan matplotlib. Terapkan kode berikut.
+**Hasil Evaluasi**
+Collaborative Filtering: RMSE Hasil evaluasi model collaborative filtering menunjukkan bahwa nilai RMSE akhir pada data training adalah sekitar 0.31, sementara pada data validasi (testing) adalah 0.36. Meskipun terdapat sedikit peningkatan pada nilai error di data validasi, nilai tersebut masih dalam batas yang dapat diterima.
 
-```sh
-   plt.plot(history.history['root_mean_squared_error'])
-   plt.plot(history.history['val_root_mean_squared_error'])
-   plt.title('model_metrics')
-   plt.ylabel('root_mean_squared_error')
-   plt.xlabel('epoch')
-   plt.legend(['train', 'test'], loc='upper left')
-   plt.show()
-```
+* Error akhir pada data training: 0.31
+* Error akhir pada data validasi: 0.36
+ 
+Visualisasi proses training menunjukkan bahwa model cukup stabil dan konvergen setelah sekitar 100 epochs. Hal ini menunjukkan bahwa model dapat memprediksi data baru dengan cukup baik.
+
+Content-Based Filtering: Precision Untuk evaluasi content-based filtering, precision dihitung berdasarkan seberapa banyak rekomendasi yang relevan di antara seluruh rekomendasi yang diberikan. Precision yang tinggi mengindikasikan bahwa model mampu memberikan rekomendasi yang tepat.
+
+Hasil evaluasi precision menunjukkan bahwa model memiliki precision sebesar 80%, yang berarti 80% dari rekomendasi yang diberikan oleh model sesuai dengan preferensi pengguna.
+
+Precision: 80%
+
+**Kesimpulan**
+Meskipun kedua model memiliki pendekatan yang berbeda, evaluasi menunjukkan bahwa keduanya dapat memberikan hasil yang cukup baik. Collaborative filtering berhasil menghasilkan prediksi dengan RMSE yang rendah, sementara content-based filtering memberikan rekomendasi yang relevan dengan precision yang tinggi.
+
 
 **output:**
 
@@ -581,7 +588,5 @@ Proses training model yang ditampilkan cukup smooth dan model berhasil konvergen
 * Error akhir pada data validasi (testing): sekitar 0.36.
   
 Meskipun nilai error pada data validasi sedikit lebih tinggi daripada pada data training, nilai ini masih cukup baik untuk sistem rekomendasi. Model menunjukkan kemampuan yang memadai untuk memprediksi data baru, meskipun ada indikasi overfitting yang perlu diperhatikan.
-
-
 
 **---Ini adalah bagian akhir laporan---**
